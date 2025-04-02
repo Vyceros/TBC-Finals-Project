@@ -1,4 +1,4 @@
-package ge.fitness.momentum.ui.theme
+package ge.fitness.momentum.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
