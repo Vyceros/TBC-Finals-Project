@@ -53,6 +53,9 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "hilt" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 
 #Gradle
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -76,9 +79,11 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 momentum-application-android = { id = "momentum.android.application", version = "unspecified" }
 momentum-application-compose = { id = "momentum.android.compose", version = "unspecified" }
 momentum-application-library = { id = "momentum.android.library", version = "unspecified" }
-momentum-android-feature-plugin = {id = "momentum.android.feature",version = "unspecified"}
+momentum-android-feature-plugin = { id = "momentum.android.feature", version = "unspecified" }
 momentum-application-library-compose = { id = "momentum.android.library.compose", version = "unspecified" }
-momentum-hilt = {id = "momentum.hilt",version = "unspecified"}
+momentum-library-jvm = { id = "momentum.library.jvm", version = "unspecified" }
+momentum-hilt = { id = "momentum.hilt", version = "unspecified" }
+momentum-room = { id = "momentum.room", version = "unspecified" }
 
 [bundles]
 compose = [
