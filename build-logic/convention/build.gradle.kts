@@ -42,6 +42,18 @@ gradlePlugin {
             id = "momentum.hilt"
             implementationClass = "HiltConventionPlugin"
         }
+
+        register("roomPlugin") {
+            id = "momentum.room"
+            implementationClass = "RoomConventionPlugin"
+        }
+
+        register("jvmLibrary") {
+            id = "momentum.library.jvm"
+            implementationClass = "JvmConventionPlugin"
+        }
+
+
     }
 }
 
