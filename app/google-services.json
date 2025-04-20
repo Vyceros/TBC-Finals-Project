@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "178552592186",
+    "project_id": "momentum-65511",
+    "storage_bucket": "momentum-65511.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:178552592186:android:84ca2102cc9a3c641b6203",
+        "android_client_info": {
+          "package_name": "ge.fitness.momentum"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "178552592186-bdruh3nmeoulprtkb4imb7q52k968a98.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkTYMMIuLCggqJBBUakqdyBuRbzZGQx0k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "178552592186-bdruh3nmeoulprtkb4imb7q52k968a98.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
