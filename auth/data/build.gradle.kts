@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.momentum.application.compose)
+    alias(libs.plugins.momentum.application.library)
 }
 
 android {
