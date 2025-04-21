@@ -9,14 +9,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light theme", showBackground = true)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark theme")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark theme", showBackground = true)
 annotation class AppPreview
 
 @Composable
@@ -71,23 +73,32 @@ fun OutlinedMomentumButton(
 @AppPreview
 @Composable
 private fun MomentumButtonPreview() {
-    MomentumButton(
-        onClick = {},
-        modifier = Modifier.fillMaxWidth(),
-        content = {
-            Text("lukaadada")
+    MomentumTheme{
+        Surface{
+            MomentumButton(
+                onClick = {},
+                modifier = Modifier.fillMaxWidth(),
+                content = {
+                    Text("Lukaadadada")
+                }
+            )
         }
-    )
+    }
 }
 
 @AppPreview
 @Composable
 private fun OutlinedMomentumButtonPreview() {
-    OutlinedMomentumButton(
-        onClick = {},
-        modifier = Modifier.fillMaxWidth(),
-        content = {
-            Text("lukaadada")
+    MomentumTheme {
+        Surface {
+            OutlinedMomentumButton(
+                onClick = {},
+                modifier = Modifier.fillMaxWidth(),
+                content = {
+                    Text("Login")
+                }
+            )
         }
-    )
+    }
+
 }
