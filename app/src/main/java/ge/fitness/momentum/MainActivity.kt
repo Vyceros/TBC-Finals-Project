@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 import ge.fitness.momentum.presentation.ui.util.AppPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -78,7 +79,9 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            MainContent()
+            MomentumTheme {
+                MainContent()
+            }
         }
     }
 
