@@ -21,11 +21,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
+import ge.fitness.auth.presentation.login.LoginScreen
+import ge.fitness.auth.presentation.navigation.AppNavigation
+import ge.fitness.auth.presentation.signup.SignUpScreen
 import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 import ge.fitness.momentum.presentation.ui.util.AppPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -91,12 +96,7 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Greeting("Momentum")
-            }
+            AppNavigation()
         }
     }
 
