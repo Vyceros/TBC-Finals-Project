@@ -15,19 +15,19 @@ internal val MomentumPoppins = FontFamily(
     ),
     Font(
         resId = R.font.poppins_regular,
-        weight = FontWeight.Light
+        weight = FontWeight.Normal
     ),
     Font(
         resId = R.font.poppins_medium,
-        weight = FontWeight.Light
+        weight = FontWeight.Medium
     ),
     Font(
         resId = R.font.poppins_bold,
-        weight = FontWeight.Light
+        weight = FontWeight.Bold
     ),
     Font(
         resId = R.font.poppins_semibold,
-        weight = FontWeight.Light
+        weight = FontWeight.SemiBold
     )
 )
 
@@ -38,19 +38,19 @@ internal val MomentumLeagueSpartan = FontFamily(
     ),
     Font(
         resId = R.font.leaguespartan_regular,
-        weight = FontWeight.Light
+        weight = FontWeight.Normal
     ),
     Font(
         resId = R.font.leaguespartan_medium,
-        weight = FontWeight.Light
+        weight = FontWeight.Medium
     ),
     Font(
         resId = R.font.leaguespartan_bold,
-        weight = FontWeight.Light
+        weight = FontWeight.Bold
     ),
     Font(
         resId = R.font.leaguespartan_semibold,
-        weight = FontWeight.Light
+        weight = FontWeight.SemiBold
     )
 )
 
@@ -144,6 +144,3 @@ internal val MomentumTypography = Typography(
         letterSpacing = 0.sp
     )
 )
-
-
-

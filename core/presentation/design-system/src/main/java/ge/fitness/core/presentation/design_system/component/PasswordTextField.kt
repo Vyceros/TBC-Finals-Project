@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
 import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 
 
@@ -37,6 +39,7 @@ fun MomentumPasswordTextField(
     label: String,
     placeholder: String = "",
     isError: Boolean = false,
+    errorMessage: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
     keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
@@ -53,6 +56,7 @@ fun MomentumPasswordTextField(
                 color = MaterialTheme.colorScheme.onBackground
             )
         }
+
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
@@ -83,6 +87,16 @@ fun MomentumPasswordTextField(
                 cursorColor = MaterialTheme.colorScheme.primary
             )
         )
+
+        // Display error message if present
+        if (isError && errorMessage != null) {
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+            )
+        }
     }
 }
 
@@ -95,7 +109,22 @@ fun PasswordPreview(){
                 label = "Password",
                 value = "Password",
                 onValueChange = {},
+            )
+        }
+    }
+}
 
+@AppPreview
+@Composable
+fun PasswordErrorPreview(){
+    MomentumTheme {
+        Surface {
+            MomentumPasswordTextField(
+                label = "Password",
+                value = "pass",
+                onValueChange = {},
+                isError = true,
+                errorMessage = "Password must be at least 8 characters"
             )
         }
     }

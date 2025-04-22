@@ -27,6 +27,7 @@ fun MomentumTextField(
     label: String,
     placeholder: String = "",
     isError: Boolean = false,
+    errorMessage: String? = null,
     isPassword: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -65,6 +66,16 @@ fun MomentumTextField(
                 cursorColor = MaterialTheme.colorScheme.primary
             ),
         )
+
+        // Display error message if present
+        if (isError && errorMessage != null) {
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+            )
+        }
     }
 }
 
@@ -80,5 +91,20 @@ fun TextFieldPreview() {
             )
         }
     }
+}
 
+@AppPreview
+@Composable
+fun TextFieldErrorPreview() {
+    MomentumTheme {
+        Surface {
+            MomentumTextField(
+                value = "test",
+                label = "Email",
+                onValueChange = {},
+                isError = true,
+                errorMessage = "Invalid email format"
+            )
+        }
+    }
 }
