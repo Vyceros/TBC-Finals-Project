@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -35,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
@@ -95,14 +97,6 @@ fun SignUpScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .testTag("signupProgressIndicator")
-                )
-            }
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -164,7 +158,7 @@ fun SignUpScreen(
                             label = "Full name",
                             placeholder = "Enter your full name",
                             isError = state.fullNameError != null,
-                            errorMessage = state.fullNameError
+                            errorMessage = state.fullNameError?.let { stringResource(id = it) }
                         )
 
                         // Email field
@@ -172,6 +166,7 @@ fun SignUpScreen(
                             value = state.email,
                             onValueChange = { onAction(SignupAction.OnEmailChanged(it)) },
                             label = "Email",
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                             placeholder = "Enter your email",
                             isError = state.emailError != null,
                             errorMessage = state.emailError?.let { stringResource(id = it) }
@@ -236,7 +231,6 @@ fun SignUpScreen(
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
 
-                // Sign Up button with black text
                 OutlinedMomentumButton(
                     onClick = {
                         onAction(
@@ -251,18 +245,28 @@ fun SignUpScreen(
                         .fillMaxWidth()
                         .height(50.dp),
                     content = {
-                        Text(
-                            text = "Sign Up",
-                        )
+                        if (state.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                     .testTag("signupProgressIndicator"),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text(text = "Sign Up")
+                        }
                     },
-                    isEnabled = state.fullNameError == null &&
+                    isEnabled = (!state.isLoading &&
+                            state.fullNameError == null &&
                             state.emailError == null &&
                             state.passwordError == null &&
                             state.confirmPasswordError == null &&
                             state.fullName.isNotBlank() &&
                             state.email.isNotBlank() &&
                             state.password.isNotBlank() &&
-                            state.confirmPassword.isNotBlank()
+                            state.confirmPassword.isNotBlank() &&
+                            state.password == state.confirmPassword)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))

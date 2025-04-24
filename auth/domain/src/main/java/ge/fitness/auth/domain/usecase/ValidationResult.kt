@@ -11,4 +11,13 @@ sealed interface ValidationResult{
     enum class EmailError : ValidationResult{
         INVALID_EMAIL
     }
+    enum class PasswordMatchError : ValidationResult {
+        EMPTY,
+        NO_MATCH
+    }
+    enum class FullNameError : ValidationResult {
+        EMPTY,
+        BLANK,
+        TOO_SHORT
+    }
 }

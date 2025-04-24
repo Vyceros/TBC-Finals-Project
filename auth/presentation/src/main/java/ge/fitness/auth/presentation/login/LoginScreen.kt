@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -138,6 +140,7 @@ fun LoginScreen(
                             value = state.email,
                             onValueChange = { onAction(LoginAction.OnEmailChanged(it)) },
                             label = stringResource(R.string.email),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                             placeholder = stringResource(R.string.enter_your_email),
                             isError = state.emailError != null,
                             errorMessage = state.emailError?.let { stringResource(id = it) },

@@ -11,6 +11,10 @@ import ge.fitness.auth.data.FirebaseAuthDataSource
 import ge.fitness.auth.domain.AuthRepository
 import ge.fitness.auth.domain.usecase.ValidateEmailUseCase
 import ge.fitness.auth.domain.usecase.ValidateEmailUseCaseImpl
+import ge.fitness.auth.domain.usecase.ValidateFullNameUseCase
+import ge.fitness.auth.domain.usecase.ValidateFullNameUseCaseImpl
+import ge.fitness.auth.domain.usecase.ValidatePasswordMatchUseCase
+import ge.fitness.auth.domain.usecase.ValidatePasswordMatchUseCaseImpl
 import ge.fitness.auth.domain.usecase.ValidatePasswordUseCase
 import ge.fitness.auth.domain.usecase.ValidatePasswordUseCaseImpl
 import javax.inject.Singleton
@@ -26,6 +30,14 @@ abstract class AppModule {
     @Singleton
     @Binds
     abstract fun bindsValidatePasswordUseCase(validatePasswordImpl: ValidatePasswordUseCaseImpl): ValidatePasswordUseCase
+
+    @Singleton
+    @Binds
+    abstract fun bindsValidatePasswordMatchUseCase(validatePasswordMatchImpl: ValidatePasswordMatchUseCaseImpl): ValidatePasswordMatchUseCase
+
+    @Singleton
+    @Binds
+    abstract fun bindsValidateFullNameUseCase(validateFullNameImpl: ValidateFullNameUseCaseImpl): ValidateFullNameUseCase
 
     @Singleton
     @Binds
