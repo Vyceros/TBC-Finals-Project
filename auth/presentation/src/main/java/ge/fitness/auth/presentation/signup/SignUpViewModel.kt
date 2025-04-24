@@ -69,6 +69,7 @@ class SignUpViewModel @Inject constructor(
             )
     }
 
+
     private fun onPasswordChanged(password: String) {
         val isPasswordValid = validatePasswordUseCase(password)
 
@@ -94,6 +95,7 @@ class SignUpViewModel @Inject constructor(
 
 
     private fun register(email: String, password: String, fullName: String) {
+        state = state.copy(isLoading = true)
 
         viewModelScope.launch(Dispatchers.IO) {
             when (val result = authRepository.signUp(email, password, fullName)) {
@@ -102,7 +104,7 @@ class SignUpViewModel @Inject constructor(
                     _events.send(SignUpEvent.ShowError(result.error.toStringRes()))
                 }
 
-                is Resource.Loading -> state = state.copy(isLoading = true)
+                is Resource.Loading -> Unit
                 is Resource.Success -> {
                     state = state.copy(isLoading = false)
                     _events.send(SignUpEvent.Success)

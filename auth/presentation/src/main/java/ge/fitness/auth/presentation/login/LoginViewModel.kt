@@ -69,6 +69,7 @@ class LoginViewModel @Inject constructor(
     }
 
 
+
     private fun validatePassword(password: String) {
         val isPasswordValid = validatePasswordUseCase(password)
         state = state.copy(
@@ -80,6 +81,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun login(email: String, password: String) {
+        state = state.copy(isLoading = true)
 
         viewModelScope.launch(Dispatchers.IO) {
             when (val result = authRepository.signIn(email, password)) {
@@ -87,8 +89,9 @@ class LoginViewModel @Inject constructor(
                     _events.send(LoginEvent.ShowError(result.error.toStringRes()))
                 }
 
-                is Resource.Loading -> state = state.copy(isLoading = true)
+                is Resource.Loading -> {}
                 is Resource.Success -> {
+                    state = state.copy(isLoading = false)
                     _events.send(LoginEvent.LoginSuccess)
                 }
             }
