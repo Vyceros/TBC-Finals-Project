@@ -18,10 +18,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -39,11 +35,12 @@ fun MomentumPasswordTextField(
     label: String,
     placeholder: String = "",
     isError: Boolean = false,
+    isPasswordVisible : Boolean = false,
+    onTogglePasswordVisibility : () -> Unit,
     errorMessage: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
     keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
-    var passwordVisible by remember { mutableStateOf(false) }
 
     Column(modifier = modifier) {
         Row(
@@ -69,15 +66,15 @@ fun MomentumPasswordTextField(
             },
             textStyle = MaterialTheme.typography.bodyLarge,
             isError = isError,
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
             singleLine = true,
             trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                IconButton(onClick = onTogglePasswordVisibility) {
                     Icon(
-                        imageVector = if (passwordVisible) Icons.Default.Warning else Icons.Default.Done,
-                        contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                        imageVector = if (isPasswordVisible) Icons.Default.Warning else Icons.Default.Done,
+                        contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
                     )
                 }
             },
@@ -88,7 +85,6 @@ fun MomentumPasswordTextField(
             )
         )
 
-        // Display error message if present
         if (isError && errorMessage != null) {
             Text(
                 text = errorMessage,
@@ -109,6 +105,9 @@ fun PasswordPreview(){
                 label = "Password",
                 value = "Password",
                 onValueChange = {},
+                onTogglePasswordVisibility = {
+                },
+                isPasswordVisible = true
             )
         }
     }
@@ -124,7 +123,9 @@ fun PasswordErrorPreview(){
                 value = "pass",
                 onValueChange = {},
                 isError = true,
-                errorMessage = "Password must be at least 8 characters"
+                errorMessage = "Password must be at least 8 characters",
+                onTogglePasswordVisibility = {},
+                isPasswordVisible = false
             )
         }
     }

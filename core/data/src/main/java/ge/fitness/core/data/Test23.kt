@@ -1,4 +1,5 @@
 package ge.fitness.core.data
 
-class Test23 {
+class SafeCall {
+
 }

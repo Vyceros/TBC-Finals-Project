@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.momentum.application.library)
+    alias(libs.plugins.momentum.hilt)
+
 }
 
 android {
@@ -7,6 +9,10 @@ android {
 }
 
 dependencies {
+
+    implementation(libs.firebase.auth)
+    implementation(platform(libs.firebase.bom))
+
     implementation(projects.core.data)
     implementation(projects.auth.domain)
     implementation(projects.core.domain)

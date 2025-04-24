@@ -36,7 +36,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-
     implementation(projects.core.presentation.ui)
     implementation(projects.core.presentation.designSystem)
     implementation(projects.core.data)

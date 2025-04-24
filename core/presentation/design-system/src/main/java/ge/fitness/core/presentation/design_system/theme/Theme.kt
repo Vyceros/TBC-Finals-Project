@@ -10,17 +10,17 @@ private val DarkColorScheme = darkColorScheme(
     primary = MomentumPurple,
     onPrimary = MomentumWhite,
     primaryContainer = MomentumLightPurple,
-    onPrimaryContainer = MomentumBlack,
+    onPrimaryContainer = MomentumDarkGray,
 
     secondary = MomentumLimeGreen,
-    onSecondary = MomentumBlack,
+    onSecondary = MomentumDarkGray,
     secondaryContainer = MomentumLimeGreen,
-    onSecondaryContainer = MomentumBlack,
+    onSecondaryContainer = MomentumDarkGray,
 
-    background = MomentumBlack,
+    background = MomentumDarkGray,
     onBackground = MomentumWhite,
 
-    surface = MomentumBlack,
+    surface = MomentumDarkGray,
     onSurface = MomentumWhite,
 
     error = MomentumRed,
@@ -29,20 +29,20 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
     primary = MomentumPurple,
-    onPrimary = MomentumWhite,
+    onPrimary = MomentumBlack,
     primaryContainer = MomentumLightPurple,
-    onPrimaryContainer = MomentumBlack,
+    onPrimaryContainer = MomentumDarkGray,
 
     secondary = MomentumLimeGreen,
-    onSecondary = MomentumBlack,
+    onSecondary = MomentumDarkGray,
     secondaryContainer = MomentumLimeGreen,
-    onSecondaryContainer = MomentumBlack,
+    onSecondaryContainer = MomentumDarkGray,
 
     background = MomentumWhite,
-    onBackground = MomentumBlack,
+    onBackground = MomentumDarkGray,
 
     surface = MomentumWhite,
-    onSurface = MomentumBlack,
+    onSurface = MomentumDarkGray,
 
     error = MomentumRed,
     onError = MomentumWhite,

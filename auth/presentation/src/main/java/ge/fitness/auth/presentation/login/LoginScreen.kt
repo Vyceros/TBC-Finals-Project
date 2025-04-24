@@ -1,56 +1,87 @@
 package ge.fitness.auth.presentation.login
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import ge.fitness.auth.presentation.R
 import ge.fitness.core.presentation.design_system.component.AppPreview
-import ge.fitness.core.presentation.design_system.component.MomentumButton
 import ge.fitness.core.presentation.design_system.component.MomentumPasswordTextField
 import ge.fitness.core.presentation.design_system.component.MomentumTextField
 import ge.fitness.core.presentation.design_system.component.OutlinedMomentumButton
 import ge.fitness.core.presentation.design_system.theme.MomentumTheme
+import ge.fitness.core.presentation.ui.HandleEvents
+
+@Composable
+fun LoginScreenRoot(
+    viewModel: LoginViewModel = hiltViewModel(),
+    onNavigateHome: () -> Unit,
+    onNavigateRegister: () -> Unit
+) {
+    val context = LocalContext.current
+    HandleEvents(viewModel.events) { events ->
+        when (events) {
+            LoginEvent.LoginSuccess -> {
+
+                onNavigateHome()
+            }
+
+            is LoginEvent.ShowError -> {
+                Toast.makeText(
+                    context,
+                    events.message?.let { context.getString(it) },
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    LoginScreen(
+        state = viewModel.state,
+        onAction = { action ->
+            when (action) {
+                LoginAction.OnRegisterClick -> onNavigateRegister()
+                else -> Unit
+            }
+            viewModel.onAction(action)
+        }
+    )
+}
+
 
 @Composable
 fun LoginScreen(
     state: LoginState,
-    email: String? = null,
-    password: String? = null,
-    onLogin: (String, String, Boolean) -> Unit,
-    onRegisterClick: () -> Unit,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit
+    onAction: (LoginAction) -> Unit,
 ) {
-    var emailState by remember { mutableStateOf(email ?: "") }
-    var passwordState by remember { mutableStateOf(password ?: "") }
-    var rememberMe by remember { mutableStateOf(false) }
-
-    // Update email and password if they come from navigation
-    LaunchedEffect(email, password) {
-        email?.let { emailState = it }
-        password?.let { passwordState = it }
-    }
-
-    // Apply validation from ViewModel state
-    LaunchedEffect(emailState) {
-        onEmailChange(emailState)
-    }
-
-    LaunchedEffect(passwordState) {
-        onPasswordChange(passwordState)
-    }
-
     MomentumTheme {
         Box(
             modifier = Modifier
@@ -65,16 +96,15 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.weight(0.5f))
 
                 Text(
-                    text = "Log In",
+                    text = stringResource(R.string.log_in),
                     color = MaterialTheme.colorScheme.secondary,
                     style = MaterialTheme.typography.titleLarge
                 )
 
                 Spacer(modifier = Modifier.weight(0.5f))
 
-                // Welcome text
                 Text(
-                    text = "Welcome",
+                    text = stringResource(R.string.welcome),
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
@@ -90,7 +120,6 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Login form section
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -103,28 +132,29 @@ fun LoginScreen(
                             .padding(horizontal = 16.dp, vertical = 24.dp)
                     ) {
                         MomentumTextField(
-                            value = emailState,
-                            onValueChange = { emailState = it },
-                            label = "Email",
-                            placeholder = "Enter your email",
+                            value = state.email,
+                            onValueChange = { onAction(LoginAction.OnEmailChanged(it)) },
+                            label = stringResource(R.string.email),
+                            placeholder = stringResource(R.string.enter_your_email),
                             isError = state.emailError != null,
-                            errorMessage = state.emailError,
+                            errorMessage = state.emailError?.let { stringResource(id = it) },
                             modifier = Modifier.fillMaxWidth()
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
 
                         MomentumPasswordTextField(
-                            value = passwordState,
-                            onValueChange = { passwordState = it },
-                            label = "Password",
-                            placeholder = "Enter your password",
+                            value = state.password,
+                            onValueChange = { onAction(LoginAction.OnPasswordChanged(it)) },
+                            label = stringResource(R.string.password),
+                            placeholder = stringResource(R.string.enter_your_password),
                             isError = state.passwordError != null,
-                            errorMessage = state.passwordError,
+                            errorMessage = state.passwordError?.let { stringResource(id = it) },
+                            isPasswordVisible = state.isPasswordVisible,
+                            onTogglePasswordVisibility = { onAction(LoginAction.OnTogglePasswordVisibility) },
                             modifier = Modifier.fillMaxWidth()
                         )
 
-                        // Remember me checkbox
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -132,21 +162,21 @@ fun LoginScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Checkbox(
-                                checked = rememberMe,
-                                onCheckedChange = { rememberMe = it }
+                                checked = state.rememberMe,
+                                onCheckedChange = { onAction(LoginAction.OnRememberMeChanged(it)) }
                             )
 
                             Text(
-                                text = "Remember me",
+                                text = stringResource(R.string.remember_me),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
 
                             Spacer(modifier = Modifier.weight(1f))
 
-                            TextButton(onClick = { /* TODO: Implement forgot password */ }) {
+                            TextButton(onClick = { /* Implement forgot password */ }) {
                                 Text(
-                                    text = "Forgot Password?",
+                                    text = stringResource(R.string.forgot_password),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                                 )
@@ -158,22 +188,26 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedMomentumButton(
-                    onClick = { onLogin(emailState, passwordState, rememberMe) },
+                    onClick = {
+                        onAction(
+                            LoginAction.OnLoginClick(
+                                email = state.email,
+                                password = state.password
+                            )
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    isEnabled = state.isLoginEnabled && !state.isLoading,
+                    isEnabled = true,
                     content = {
                         if (state.isLoading) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.background
                             )
                         } else {
                             Text(
-                                text = "Log In",
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.background
+                                text = stringResource(R.string.log_in),
                             )
                         }
                     }
@@ -181,11 +215,8 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Social login options
                 Text(
-                    text = "or sign up with",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                    text = stringResource(R.string.or_sign_up_with),
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
 
@@ -195,40 +226,23 @@ fun LoginScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 64.dp)
                 ) {
-                    // Google login button
                     Box(
                         modifier = Modifier
                             .size(48.dp)
                             .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surface),
+                            .background(MaterialTheme.colorScheme.surface)
+                            .clickable { /* Implement Google Sign In */ },
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.ic_gmail),
-                            contentDescription = "Google Login",
+                            contentDescription = stringResource(R.string.google_login),
                             modifier = Modifier.size(24.dp)
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    // Facebook login button
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surface),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_facebook),
-                            contentDescription = "Facebook Login",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
                 }
 
-                // Added "Don't have an account? Sign Up" section
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Row(
@@ -236,21 +250,15 @@ fun LoginScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Don't have an account?",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onBackground
+                        text = stringResource(R.string.don_t_have_an_account),
                     )
 
-                    TextButton(onClick = onRegisterClick) {
+                    TextButton(onClick = { onAction(LoginAction.OnRegisterClick) }) {
                         Text(
-                            text = "Sign Up",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.secondary
+                            text = stringResource(R.string.or_sign_up_with),
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -261,11 +269,10 @@ fun LoginScreen(
 fun LoginScreenPreview() {
     MomentumTheme {
         LoginScreen(
-            state = LoginState(),
-            onLogin = { _, _, _ -> },
-            onRegisterClick = { },
-            onEmailChange = { },
-            onPasswordChange = { }
+            state = LoginState(
+                isLoginEnabled = true
+            ),
+            onAction = {},
         )
     }
 }

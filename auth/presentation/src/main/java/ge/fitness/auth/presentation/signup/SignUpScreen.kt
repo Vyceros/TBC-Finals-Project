@@ -1,41 +1,90 @@
 package ge.fitness.auth.presentation.signup
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import ge.fitness.auth.presentation.R
 import ge.fitness.core.presentation.design_system.component.AppPreview
 import ge.fitness.core.presentation.design_system.component.MomentumPasswordTextField
 import ge.fitness.core.presentation.design_system.component.MomentumTextField
 import ge.fitness.core.presentation.design_system.component.OutlinedMomentumButton
 import ge.fitness.core.presentation.design_system.theme.MomentumTheme
+import ge.fitness.core.presentation.ui.HandleEvents
+
+
+@Composable
+fun SignUpScreenRoot(
+    viewModel: SignUpViewModel = hiltViewModel(),
+    onNavigateLogin: () -> Unit
+) {
+    val context = LocalContext.current
+    HandleEvents(viewModel.events) { events ->
+        when (events) {
+            SignUpEvent.Success -> {
+                onNavigateLogin()
+            }
+
+            is SignUpEvent.ShowError -> {
+                Toast.makeText(
+                    context,
+                    events.error?.let { context.getString(it) },
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    SignUpScreen(
+        state = viewModel.state,
+        onAction = { action ->
+            when (action) {
+                SignupAction.OnLoginClick -> onNavigateLogin()
+                else -> Unit
+            }
+            viewModel.onAction(action)
+        }
+    )
+}
+
 
 @Composable
 fun SignUpScreen(
-    state: SignUpState = SignUpState(),
-    onSignUp: (String, String, String) -> Unit = { _, _, _ -> },
-    onBackClick: () -> Unit = {},
-    onLoginClick: () -> Unit = {},
-    onFullNameChange: (String) -> Unit = {},
-    onEmailChange: (String) -> Unit = {},
-    onPasswordChange: (String) -> Unit = {},
-    onConfirmPasswordChange: (String) -> Unit = {}
+    state: SignUpState,
+    onAction: (SignupAction) -> Unit
 ) {
     MomentumTheme {
         Box(
@@ -61,9 +110,9 @@ fun SignUpScreen(
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 ) {
-                    // Back button
+
                     IconButton(
-                        onClick = onBackClick,
+                        onClick = {},
                         modifier = Modifier.align(Alignment.CenterStart)
                     ) {
                         Icon(
@@ -106,7 +155,7 @@ fun SignUpScreen(
                         // Full name field
                         MomentumTextField(
                             value = state.fullName,
-                            onValueChange = onFullNameChange,
+                            onValueChange = { onAction(SignupAction.OnFullNameChanged(it)) },
                             label = "Full name",
                             placeholder = "Enter your full name",
                             isError = state.fullNameError != null,
@@ -116,31 +165,37 @@ fun SignUpScreen(
                         // Email field
                         MomentumTextField(
                             value = state.email,
-                            onValueChange = onEmailChange,
+                            onValueChange = { onAction(SignupAction.OnEmailChanged(it)) },
                             label = "Email",
                             placeholder = "Enter your email",
                             isError = state.emailError != null,
-                            errorMessage = state.emailError
+                            errorMessage = state.emailError?.let { stringResource(id = it) }
                         )
 
                         // Password field
                         MomentumPasswordTextField(
                             value = state.password,
-                            onValueChange = onPasswordChange,
+                            onValueChange = { onAction(SignupAction.OnPasswordChanged(it)) },
                             label = "Password",
                             placeholder = "Enter your password",
                             isError = state.passwordError != null,
-                            errorMessage = state.passwordError
+                            errorMessage = state.passwordError?.let { stringResource(id = it) },
+                            onTogglePasswordVisibility = {
+
+                            }
                         )
 
                         // Confirm Password field
                         MomentumPasswordTextField(
                             value = state.confirmPassword,
-                            onValueChange = onConfirmPasswordChange,
+                            onValueChange = { onAction(SignupAction.OnRepeatPasswordChanged(it)) },
                             label = "Confirm Password",
                             placeholder = "Confirm your password",
                             isError = state.confirmPasswordError != null,
-                            errorMessage = state.confirmPasswordError
+                            errorMessage = state.confirmPasswordError?.let { stringResource(id = it) },
+                            onTogglePasswordVisibility = {
+
+                            }
                         )
                     }
                 }
@@ -177,7 +232,13 @@ fun SignUpScreen(
                 // Sign Up button with black text
                 OutlinedMomentumButton(
                     onClick = {
-                        onSignUp(state.fullName, state.email, state.password)
+                        onAction(
+                            SignupAction.OnRegisterClick(
+                                state.email,
+                                state.password,
+                                state.fullName
+                            )
+                        )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -185,8 +246,6 @@ fun SignUpScreen(
                     content = {
                         Text(
                             text = "Sign Up",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.background
                         )
                     },
                     isEnabled = state.fullNameError == null &&
@@ -230,22 +289,6 @@ fun SignUpScreen(
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    // Facebook login button
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surface),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_facebook),
-                            contentDescription = "Facebook Login",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -263,7 +306,7 @@ fun SignUpScreen(
                     )
 
                     TextButton(
-                        onClick = onLoginClick,
+                        onClick = { onAction(SignupAction.OnLoginClick) },
                         contentPadding = PaddingValues(horizontal = 4.dp)
                     ) {
                         Text(
@@ -282,6 +325,12 @@ fun SignUpScreen(
 @Composable
 fun SignUpScreenPreview() {
     MomentumTheme {
-        SignUpScreen()
+        SignUpScreen(
+            state = SignUpState(
+                isRegisterEnabled = true
+            )
+        ){
+
+        }
     }
 }

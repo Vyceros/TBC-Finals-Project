@@ -40,7 +40,6 @@ fun MomentumTextField(
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 8.dp),
         )
-
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
@@ -67,7 +66,6 @@ fun MomentumTextField(
             ),
         )
 
-        // Display error message if present
         if (isError && errorMessage != null) {
             Text(
                 text = errorMessage,
@@ -102,7 +100,7 @@ fun TextFieldErrorPreview() {
                 value = "test",
                 label = "Email",
                 onValueChange = {},
-                isError = true,
+                isError = false,
                 errorMessage = "Invalid email format"
             )
         }
