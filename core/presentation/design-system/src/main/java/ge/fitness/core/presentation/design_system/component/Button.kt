@@ -43,10 +43,9 @@ fun MomentumButton(
             disabledContainerColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.12f),
             disabledContentColor = MaterialTheme.colorScheme.background.copy(alpha = 0.38f)
         ),
-        contentPadding = contentPaddingValues
-    ) {
-        content()
-    }
+        contentPadding = contentPaddingValues,
+        content = content
+    )
 }
 
 /**
@@ -67,15 +66,14 @@ fun OutlinedMomentumButton(
         enabled = isEnabled,
         colors = ButtonDefaults.outlinedButtonColors(
             containerColor = Color.Transparent,  // Transparent background
-            contentColor = MaterialTheme.colorScheme.onBackground,  // Text visible in both themes
+            contentColor = MaterialTheme.colorScheme.onPrimary,
             disabledContainerColor = Color.Transparent,
             disabledContentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.38f)
         ),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground),
-        contentPadding = contentPaddingValues
-    ) {
-        content()
-    }
+        contentPadding = contentPaddingValues,
+        content = content
+    )
 }
 
 @AppPreview

@@ -6,8 +6,12 @@ data class SignUpState(
     val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",
+    val isPasswordMatch : Boolean = false,
+    val isValidPassword : Boolean = false,
+    val isValidEmail : Boolean = false,
     val fullNameError: String? = null,
-    val emailError: String? = null,
-    val passwordError: String? = null,
-    val confirmPasswordError: String? = null
+    val emailError: Int? = null,
+    val passwordError: Int? = null,
+    val confirmPasswordError: Int? = null,
+    val isRegisterEnabled : Boolean = false
 )

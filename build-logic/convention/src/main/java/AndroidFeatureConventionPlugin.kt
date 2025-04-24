@@ -9,6 +9,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             with(pluginManager) {
                 apply("momentum.android.library.compose")
                 apply("momentum.hilt")
+                apply("org.jetbrains.kotlin.plugin.serialization")
             }
 
             dependencies {

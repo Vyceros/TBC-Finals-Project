@@ -9,10 +9,10 @@ interface ValidateEmailUseCase {
 class ValidateEmailUseCaseImpl @Inject constructor() : ValidateEmailUseCase {
     override operator fun invoke(email: String): ValidationResult {
         val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$"
-        return if (email.matches(emailRegex.toRegex())) {
-            ValidationResult.Success
-        } else {
-            ValidationResult.Error("Invalid email format")
+        return when {
+            !email.matches(emailRegex.toRegex()) -> ValidationResult.EmailError.INVALID_EMAIL
+            else -> ValidationResult.Success
         }
     }
 }
+

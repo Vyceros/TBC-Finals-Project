@@ -1,15 +1,19 @@
 package ge.fitness.auth.presentation.signup
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import ge.fitness.auth.domain.AuthRepository
 import ge.fitness.auth.domain.usecase.ValidateEmailUseCase
 import ge.fitness.auth.domain.usecase.ValidatePasswordUseCase
 import ge.fitness.auth.domain.usecase.ValidationResult
+import ge.fitness.auth.presentation.utils.toStringRes
+import ge.fitness.core.domain.util.Resource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,66 +21,95 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val validateEmailUseCase: ValidateEmailUseCase,
-    private val validatePasswordUseCase: ValidatePasswordUseCase
+    private val validatePasswordUseCase: ValidatePasswordUseCase,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(SignUpState())
-    val state: StateFlow<SignUpState> = _state.asStateFlow()
+    var state by mutableStateOf(SignUpState())
+        private set
 
     private val _events = Channel<SignUpEvent>()
     val events = _events.receiveAsFlow()
 
-    fun onEvent(event: SignUpEvent) {
-        when (event) {
-            is SignUpEvent.NavigateToLogin -> {
-                viewModelScope.launch {
-                    _events.send(SignUpEvent.NavigateBack(state.value.email, ""))
-                }
-            }
-            is SignUpEvent.ShowSnackbar -> {
-                // Handle ShowSnackbar event if needed
-            }
-            is SignUpEvent.NavigateBack -> {
-                // Handle NavigateBack event if needed
+    fun onAction(action: SignupAction) {
+        when (action) {
+            is SignupAction.OnEmailChanged -> {
+                onEmailChanged(action.email)
             }
 
-            else -> {}
+            is SignupAction.OnFullNameChanged -> {
+                onFullNameChanged(action.name)
+            }
+
+            is SignupAction.OnPasswordChanged -> {
+                onPasswordChanged(action.password)
+            }
+
+            is SignupAction.OnRegisterClick -> {
+                register(action.email, action.password, action.fullName)
+            }
+
+            is SignupAction.OnRepeatPasswordChanged -> {
+                onRepeatPasswordChanged(action.repeatPassword)
+            }
+
+            else -> Unit
         }
     }
 
-    fun validateFullName(fullName: String) {
-        _state.value = state.value.copy(
-            fullName = fullName,
-            fullNameError = if (fullName.length < 3) "Full name must be at least 3 characters" else null
-        )
+
+    private fun onEmailChanged(email: String) {
+        val isEmailValid = validateEmailUseCase(email)
+        state =
+            state.copy(
+                isValidEmail = isEmailValid is ValidationResult.EmailError,
+                email = email,
+                emailError = isEmailValid.toStringRes(),
+                isRegisterEnabled = isEmailValid is ValidationResult.Success
+            )
     }
 
-    fun validateEmail(email: String) {
-        val emailResult = validateEmailUseCase(email)
-        _state.value = state.value.copy(
-            email = email,
-            emailError = when(emailResult) {
-                is ValidationResult.Success -> null
-                is ValidationResult.Error -> emailResult.errorMessage
-            }
-        )
-    }
+    private fun onPasswordChanged(password: String) {
+        val isPasswordValid = validatePasswordUseCase(password)
 
-    fun validatePassword(password: String) {
-        val passwordResult = validatePasswordUseCase(password)
-        _state.value = state.value.copy(
+        state = state.copy(
+            isValidPassword = isPasswordValid is ValidationResult.PasswordError,
+            passwordError = isPasswordValid.toStringRes(),
             password = password,
-            passwordError = when(passwordResult) {
-                is ValidationResult.Success -> null
-                is ValidationResult.Error -> passwordResult.errorMessage
-            }
+            isRegisterEnabled = isPasswordValid is ValidationResult.Success
         )
     }
 
-    fun validateConfirmPassword(confirmPassword: String) {
-        _state.value = state.value.copy(
-            confirmPassword = confirmPassword,
-            confirmPasswordError = if (confirmPassword != state.value.password) "Passwords don't match" else null
+    private fun onRepeatPasswordChanged(password: String) {
+        state = state.copy(
+            confirmPassword = password
         )
     }
+
+    private fun onFullNameChanged(name: String) {
+        state = state.copy(
+            fullName = name
+        )
+    }
+
+
+    private fun register(email: String, password: String, fullName: String) {
+
+        viewModelScope.launch(Dispatchers.IO) {
+            when (val result = authRepository.signUp(email, password, fullName)) {
+                is Resource.Error -> {
+                    state = state.copy(isLoading = false)
+                    _events.send(SignUpEvent.ShowError(result.error.toStringRes()))
+                }
+
+                is Resource.Loading -> state = state.copy(isLoading = true)
+                is Resource.Success -> {
+                    state = state.copy(isLoading = false)
+                    _events.send(SignUpEvent.Success)
+                }
+            }
+        }
+    }
+
+
 }

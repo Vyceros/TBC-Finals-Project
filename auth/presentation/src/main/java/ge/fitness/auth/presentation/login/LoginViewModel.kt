@@ -1,135 +1,96 @@
 package ge.fitness.auth.presentation.login
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ge.fitness.auth.domain.common.Resource
+import ge.fitness.auth.domain.AuthRepository
 import ge.fitness.auth.domain.usecase.ValidateEmailUseCase
 import ge.fitness.auth.domain.usecase.ValidatePasswordUseCase
 import ge.fitness.auth.domain.usecase.ValidationResult
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import ge.fitness.auth.presentation.utils.toStringRes
+import ge.fitness.core.domain.util.Resource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val validateEmailUseCase: ValidateEmailUseCase,
-    private val validatePasswordUseCase: ValidatePasswordUseCase
-    // Add your actual login use case when implemented
-    // private val loginUseCase: LoginUseCase
+    private val validatePasswordUseCase: ValidatePasswordUseCase,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    // State
-    private val _state = MutableStateFlow(LoginState())
-    val state: StateFlow<LoginState> = _state.asStateFlow()
+    var state by mutableStateOf(LoginState())
+        private set
 
-    // Events
-    private val _events = MutableSharedFlow<LoginEvent>()
-    val events: SharedFlow<LoginEvent> = _events.asSharedFlow()
+    private val _events = Channel<LoginEvent>()
+    val events = _events.receiveAsFlow()
 
-    // Login resource state
-    private val _loginResource = MutableStateFlow<Resource<Unit>>(Resource.Success(Unit))
+    fun onAction(action: LoginAction) {
+        when (action) {
+            LoginAction.OnTogglePasswordVisibility -> {
+                state = state.copy(isPasswordVisible = !state.isPasswordVisible)
+            }
 
-    // Handle user intents
-    fun onEvent(event: LoginEvent) {
-        when (event) {
-            is LoginEvent.OnEmailChanged -> {
-                val result = validateEmailUseCase(event.email)
-                _state.value = _state.value.copy(
-                    email = event.email,
-                    emailError = if (result is ValidationResult.Error) result.errorMessage else null
-                )
+            is LoginAction.OnEmailChanged -> {
+                validateEmail(action.email)
             }
-            is LoginEvent.OnPasswordChanged -> {
-                val result = validatePasswordUseCase(event.password)
-                _state.value = _state.value.copy(
-                    password = event.password,
-                    passwordError = if (result is ValidationResult.Error) result.errorMessage else null
-                )
+
+            is LoginAction.OnPasswordChanged -> {
+                validatePassword(action.password)
             }
-            is LoginEvent.OnRememberMeChanged -> {
-                _state.value = _state.value.copy(rememberMe = event.rememberMe)
+
+            is LoginAction.OnRememberMeChanged -> {
+                state = state.copy(rememberMe = !state.rememberMe)
             }
-            is LoginEvent.LoginUser -> {
-                loginUser(event.email, event.password, event.rememberMe)
+
+            is LoginAction.OnLoginClick -> {
+                login(action.email, action.password)
             }
-            is LoginEvent.CheckUserSession -> {
-                checkUserSession()
-            }
-            else -> {} // Other events are handled at the UI level
+
+            else -> Unit
         }
     }
 
-    // Rest of validation methods...
-
-    private fun loginUser(email: String, password: String, rememberMe: Boolean) {
-        // Validate inputs first
-        val emailResult = validateEmailUseCase(email)
-        val passwordResult = validatePasswordUseCase(password)
-
-        val hasError = emailResult is ValidationResult.Error || passwordResult is ValidationResult.Error
-
-        if (hasError) {
-            _state.value = _state.value.copy(
-                emailError = if (emailResult is ValidationResult.Error) emailResult.errorMessage else null,
-                passwordError = if (passwordResult is ValidationResult.Error) passwordResult.errorMessage else null
+    private fun validateEmail(email: String) {
+        val isEmailValid = validateEmailUseCase(email)
+        state =
+            state.copy(
+                isPasswordValid = isEmailValid is ValidationResult.EmailError,
+                email = email,
+                emailError = isEmailValid.toStringRes(),
+                isLoginEnabled = isEmailValid is ValidationResult.Success
             )
-            return
-        }
-
-        // Set loading state using Resource
-        _loginResource.value = Resource.Loading(true)
-        _state.value = _state.value.copy(isLoading = true)
-
-        viewModelScope.launch {
-            try {
-                // Here you would call your actual login use case
-                // val result = loginUseCase(email, password, rememberMe)
-
-                // For now, simulate success after a delay
-                kotlinx.coroutines.delay(1000)
-
-                // Update resource state to success
-                _loginResource.value = Resource.Success(Unit)
-
-                // Emit success event
-                _events.emit(LoginEvent.NavigateToHome)
-
-                // Update state
-                _state.value = _state.value.copy(isLoading = false)
-            } catch (e: Exception) {
-                // Handle error with Resource
-                _loginResource.value = Resource.Error("Login failed: ${e.message}")
-                _state.value = _state.value.copy(isLoading = false)
-                _events.emit(LoginEvent.ShowSnackbar("Login failed: ${e.message}"))
-            }
-        }
     }
 
-    private fun checkUserSession() {
-        viewModelScope.launch {
-            _loginResource.value = Resource.Loading(true)
 
-            try {
-                // Here you would check if user is already logged in
-                // val isLoggedIn = userSessionRepository.isUserLoggedIn()
-                // if (isLoggedIn) {
-                //     _loginResource.value = Resource.Success(Unit)
-                //     _events.emit(LoginEvent.NavigateToHome)
-                // } else {
-                //     _loginResource.value = Resource.Success(Unit) // Just to indicate checking completed
-                // }
+    private fun validatePassword(password: String) {
+        val isPasswordValid = validatePasswordUseCase(password)
+        state = state.copy(
+            isPasswordValid = isPasswordValid is ValidationResult.PasswordError,
+            passwordError = isPasswordValid.toStringRes(),
+            password = password,
+            isLoginEnabled = isPasswordValid is ValidationResult.Success
+        )
+    }
 
-                // For now, this is just a placeholder
-                _loginResource.value = Resource.Success(Unit)
-            } catch (e: Exception) {
-                _loginResource.value = Resource.Error("Session check failed: ${e.message}")
-                // You might want to handle this error silently or show a message
+    private fun login(email: String, password: String) {
+
+        viewModelScope.launch(Dispatchers.IO) {
+            when (val result = authRepository.signIn(email, password)) {
+                is Resource.Error -> {
+                    _events.send(LoginEvent.ShowError(result.error.toStringRes()))
+                }
+
+                is Resource.Loading -> state = state.copy(isLoading = true)
+                is Resource.Success -> {
+                    _events.send(LoginEvent.LoginSuccess)
+                }
             }
         }
     }

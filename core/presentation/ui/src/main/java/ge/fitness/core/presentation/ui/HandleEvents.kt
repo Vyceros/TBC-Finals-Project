@@ -1,4 +1,4 @@
-package ge.fitness.auth.presentation.utils
+package ge.fitness.core.presentation.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
