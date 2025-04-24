@@ -182,11 +182,12 @@ fun SignUpScreen(
                             value = state.password,
                             onValueChange = { onAction(SignupAction.OnPasswordChanged(it)) },
                             label = "Password",
+                            isPasswordVisible = state.isPasswordVisible,
                             placeholder = "Enter your password",
                             isError = state.passwordError != null,
                             errorMessage = state.passwordError?.let { stringResource(id = it) },
                             onTogglePasswordVisibility = {
-
+                                onAction(SignupAction.OnTogglePasswordVisibility)
                             }
                         )
 
@@ -195,11 +196,12 @@ fun SignUpScreen(
                             value = state.confirmPassword,
                             onValueChange = { onAction(SignupAction.OnRepeatPasswordChanged(it)) },
                             label = "Confirm Password",
+                            isPasswordVisible = state.isConfirmPasswordVisible,
                             placeholder = "Confirm your password",
                             isError = state.confirmPasswordError != null,
                             errorMessage = state.confirmPasswordError?.let { stringResource(id = it) },
                             onTogglePasswordVisibility = {
-
+                                onAction(SignupAction.OnToggleConfirmPasswordVisibility)
                             }
                         )
                     }

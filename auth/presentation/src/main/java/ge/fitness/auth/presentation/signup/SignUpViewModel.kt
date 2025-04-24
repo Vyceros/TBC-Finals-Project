@@ -33,24 +33,28 @@ class SignUpViewModel @Inject constructor(
 
     fun onAction(action: SignupAction) {
         when (action) {
-            is SignupAction.OnEmailChanged -> {
-                onEmailChanged(action.email)
-            }
-
-            is SignupAction.OnFullNameChanged -> {
-                onFullNameChanged(action.name)
-            }
-
-            is SignupAction.OnPasswordChanged -> {
-                onPasswordChanged(action.password)
-            }
-
-            is SignupAction.OnRegisterClick -> {
-                register(action.email, action.password, action.fullName)
-            }
-
-            is SignupAction.OnRepeatPasswordChanged -> {
+            is SignupAction.OnEmailChanged -> onEmailChanged(action.email)
+            is SignupAction.OnFullNameChanged -> onFullNameChanged(action.name)
+            is SignupAction.OnPasswordChanged -> onPasswordChanged(action.password)
+            is SignupAction.OnRepeatPasswordChanged ->
                 onRepeatPasswordChanged(action.repeatPassword)
+
+            is SignupAction.OnRegisterClick -> register(
+                action.email,
+                action.password,
+                action.fullName
+            )
+
+            SignupAction.OnTogglePasswordVisibility -> {
+                state = state.copy(
+                    isPasswordVisible = !state.isPasswordVisible
+                )
+            }
+
+            SignupAction.OnToggleConfirmPasswordVisibility -> {
+                state = state.copy(
+                    isConfirmPasswordVisible = !state.isConfirmPasswordVisible
+                )
             }
 
             else -> Unit
