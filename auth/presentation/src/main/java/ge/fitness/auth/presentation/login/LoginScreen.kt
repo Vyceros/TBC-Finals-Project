@@ -14,7 +14,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -27,8 +30,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -93,7 +98,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.weight(0.5f))
+                Spacer(modifier = Modifier.weight(1f))
 
                 Text(
                     text = stringResource(R.string.log_in),
@@ -135,10 +140,13 @@ fun LoginScreen(
                             value = state.email,
                             onValueChange = { onAction(LoginAction.OnEmailChanged(it)) },
                             label = stringResource(R.string.email),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                             placeholder = stringResource(R.string.enter_your_email),
                             isError = state.emailError != null,
                             errorMessage = state.emailError?.let { stringResource(id = it) },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("emailField"),
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -152,7 +160,9 @@ fun LoginScreen(
                             errorMessage = state.passwordError?.let { stringResource(id = it) },
                             isPasswordVisible = state.isPasswordVisible,
                             onTogglePasswordVisibility = { onAction(LoginAction.OnTogglePasswordVisibility) },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("passwordField"),
                         )
 
                         Row(
@@ -198,12 +208,15 @@ fun LoginScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
-                    isEnabled = true,
+                        .height(56.dp)
+                        .testTag("loginButton"),
+                    isEnabled = state.isLoginEnabled,
                     content = {
                         if (state.isLoading) {
                             CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .testTag("loginProgressIndicator")
                             )
                         } else {
                             Text(
@@ -255,7 +268,7 @@ fun LoginScreen(
 
                     TextButton(onClick = { onAction(LoginAction.OnRegisterClick) }) {
                         Text(
-                            text = stringResource(R.string.or_sign_up_with),
+                            text = stringResource(R.string.sign_up),
                         )
                     }
                 }

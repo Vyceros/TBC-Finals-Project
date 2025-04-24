@@ -20,10 +20,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import ge.fitness.core.presentation.design_system.R
 import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 
 
@@ -73,7 +75,12 @@ fun MomentumPasswordTextField(
             trailingIcon = {
                 IconButton(onClick = onTogglePasswordVisibility) {
                     Icon(
-                        imageVector = if (isPasswordVisible) Icons.Default.Warning else Icons.Default.Done,
+                        painter = painterResource(
+                            id = if (isPasswordVisible)
+                                R.drawable.ic_visibility_on
+                            else
+                                R.drawable.ic_visibility_off
+                        ),
                         contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
                     )
                 }

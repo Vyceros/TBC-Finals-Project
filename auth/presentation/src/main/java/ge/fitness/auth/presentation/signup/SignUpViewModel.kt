@@ -8,8 +8,11 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ge.fitness.auth.domain.AuthRepository
 import ge.fitness.auth.domain.usecase.ValidateEmailUseCase
+import ge.fitness.auth.domain.usecase.ValidateFullNameUseCase
+import ge.fitness.auth.domain.usecase.ValidatePasswordMatchUseCase
 import ge.fitness.auth.domain.usecase.ValidatePasswordUseCase
 import ge.fitness.auth.domain.usecase.ValidationResult
+import ge.fitness.auth.presentation.R
 import ge.fitness.auth.presentation.utils.toStringRes
 import ge.fitness.core.domain.util.Resource
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +25,8 @@ import javax.inject.Inject
 class SignUpViewModel @Inject constructor(
     private val validateEmailUseCase: ValidateEmailUseCase,
     private val validatePasswordUseCase: ValidatePasswordUseCase,
+    private val validatePasswordMatchUseCase: ValidatePasswordMatchUseCase,
+    private val validateFullNameUseCase: ValidateFullNameUseCase,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
@@ -33,24 +38,28 @@ class SignUpViewModel @Inject constructor(
 
     fun onAction(action: SignupAction) {
         when (action) {
-            is SignupAction.OnEmailChanged -> {
-                onEmailChanged(action.email)
-            }
-
-            is SignupAction.OnFullNameChanged -> {
-                onFullNameChanged(action.name)
-            }
-
-            is SignupAction.OnPasswordChanged -> {
-                onPasswordChanged(action.password)
-            }
-
-            is SignupAction.OnRegisterClick -> {
-                register(action.email, action.password, action.fullName)
-            }
-
-            is SignupAction.OnRepeatPasswordChanged -> {
+            is SignupAction.OnEmailChanged -> onEmailChanged(action.email)
+            is SignupAction.OnFullNameChanged -> onFullNameChanged(action.name)
+            is SignupAction.OnPasswordChanged -> onPasswordChanged(action.password)
+            is SignupAction.OnRepeatPasswordChanged ->
                 onRepeatPasswordChanged(action.repeatPassword)
+
+            is SignupAction.OnRegisterClick -> register(
+                action.email,
+                action.password,
+                action.fullName
+            )
+
+            SignupAction.OnTogglePasswordVisibility -> {
+                state = state.copy(
+                    isPasswordVisible = !state.isPasswordVisible
+                )
+            }
+
+            SignupAction.OnToggleConfirmPasswordVisibility -> {
+                state = state.copy(
+                    isConfirmPasswordVisible = !state.isConfirmPasswordVisible
+                )
             }
 
             else -> Unit
@@ -62,38 +71,63 @@ class SignUpViewModel @Inject constructor(
         val isEmailValid = validateEmailUseCase(email)
         state =
             state.copy(
-                isValidEmail = isEmailValid is ValidationResult.EmailError,
+                isValidEmail = isEmailValid is ValidationResult.Success,
                 email = email,
                 emailError = isEmailValid.toStringRes(),
                 isRegisterEnabled = isEmailValid is ValidationResult.Success
             )
     }
 
+
     private fun onPasswordChanged(password: String) {
         val isPasswordValid = validatePasswordUseCase(password)
 
+        val passwordMatchResult = if (state.confirmPassword.isNotEmpty()) {
+            validatePasswordMatchUseCase(password, state.confirmPassword)
+        } else {
+            null
+        }
+
         state = state.copy(
-            isValidPassword = isPasswordValid is ValidationResult.PasswordError,
+            isValidPassword = isPasswordValid is ValidationResult.Success,
             passwordError = isPasswordValid.toStringRes(),
             password = password,
-            isRegisterEnabled = isPasswordValid is ValidationResult.Success
+            confirmPasswordError = passwordMatchResult?.toStringRes(),
+            isRegisterEnabled = isPasswordValid is ValidationResult.Success &&
+                    (passwordMatchResult == null || passwordMatchResult is ValidationResult.Success) &&
+                    state.isValidEmail
         )
     }
 
+
     private fun onRepeatPasswordChanged(password: String) {
+        val passwordMatchResult = validatePasswordMatchUseCase(state.password, password)
+
         state = state.copy(
-            confirmPassword = password
+            confirmPassword = password,
+            confirmPasswordError = passwordMatchResult.toStringRes(),
+            isRegisterEnabled = passwordMatchResult is ValidationResult.Success &&
+                    state.isValidEmail &&
+                    state.isValidPassword
         )
     }
 
     private fun onFullNameChanged(name: String) {
+        val fullNameValidation = validateFullNameUseCase(name)
+
         state = state.copy(
-            fullName = name
+            fullName = name,
+            fullNameError = fullNameValidation.toStringRes(),
+            isRegisterEnabled = fullNameValidation is ValidationResult.Success &&
+                    state.isValidEmail &&
+                    state.isValidPassword &&
+                    (state.confirmPassword.isEmpty() || state.confirmPasswordError == null)
         )
     }
 
 
     private fun register(email: String, password: String, fullName: String) {
+        state = state.copy(isLoading = true)
 
         viewModelScope.launch(Dispatchers.IO) {
             when (val result = authRepository.signUp(email, password, fullName)) {
@@ -102,7 +136,7 @@ class SignUpViewModel @Inject constructor(
                     _events.send(SignUpEvent.ShowError(result.error.toStringRes()))
                 }
 
-                is Resource.Loading -> state = state.copy(isLoading = true)
+                is Resource.Loading -> Unit
                 is Resource.Success -> {
                     state = state.copy(isLoading = false)
                     _events.send(SignUpEvent.Success)

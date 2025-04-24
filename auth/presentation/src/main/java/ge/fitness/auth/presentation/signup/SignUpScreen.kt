@@ -14,7 +14,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,10 +31,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
@@ -92,12 +97,6 @@ fun SignUpScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -112,7 +111,7 @@ fun SignUpScreen(
                 ) {
 
                     IconButton(
-                        onClick = {},
+                        onClick = { onAction(SignupAction.OnLoginClick) },
                         modifier = Modifier.align(Alignment.CenterStart)
                     ) {
                         Icon(
@@ -159,7 +158,7 @@ fun SignUpScreen(
                             label = "Full name",
                             placeholder = "Enter your full name",
                             isError = state.fullNameError != null,
-                            errorMessage = state.fullNameError
+                            errorMessage = state.fullNameError?.let { stringResource(id = it) }
                         )
 
                         // Email field
@@ -167,6 +166,7 @@ fun SignUpScreen(
                             value = state.email,
                             onValueChange = { onAction(SignupAction.OnEmailChanged(it)) },
                             label = "Email",
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                             placeholder = "Enter your email",
                             isError = state.emailError != null,
                             errorMessage = state.emailError?.let { stringResource(id = it) }
@@ -177,11 +177,12 @@ fun SignUpScreen(
                             value = state.password,
                             onValueChange = { onAction(SignupAction.OnPasswordChanged(it)) },
                             label = "Password",
+                            isPasswordVisible = state.isPasswordVisible,
                             placeholder = "Enter your password",
                             isError = state.passwordError != null,
                             errorMessage = state.passwordError?.let { stringResource(id = it) },
                             onTogglePasswordVisibility = {
-
+                                onAction(SignupAction.OnTogglePasswordVisibility)
                             }
                         )
 
@@ -190,11 +191,12 @@ fun SignUpScreen(
                             value = state.confirmPassword,
                             onValueChange = { onAction(SignupAction.OnRepeatPasswordChanged(it)) },
                             label = "Confirm Password",
+                            isPasswordVisible = state.isConfirmPasswordVisible,
                             placeholder = "Confirm your password",
                             isError = state.confirmPasswordError != null,
                             errorMessage = state.confirmPasswordError?.let { stringResource(id = it) },
                             onTogglePasswordVisibility = {
-
+                                onAction(SignupAction.OnToggleConfirmPasswordVisibility)
                             }
                         )
                     }
@@ -229,7 +231,6 @@ fun SignUpScreen(
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
 
-                // Sign Up button with black text
                 OutlinedMomentumButton(
                     onClick = {
                         onAction(
@@ -244,18 +245,28 @@ fun SignUpScreen(
                         .fillMaxWidth()
                         .height(50.dp),
                     content = {
-                        Text(
-                            text = "Sign Up",
-                        )
+                        if (state.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                     .testTag("signupProgressIndicator"),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text(text = "Sign Up")
+                        }
                     },
-                    isEnabled = state.fullNameError == null &&
+                    isEnabled = (!state.isLoading &&
+                            state.fullNameError == null &&
                             state.emailError == null &&
                             state.passwordError == null &&
                             state.confirmPasswordError == null &&
                             state.fullName.isNotBlank() &&
                             state.email.isNotBlank() &&
                             state.password.isNotBlank() &&
-                            state.confirmPassword.isNotBlank()
+                            state.confirmPassword.isNotBlank() &&
+                            state.password == state.confirmPassword)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -307,7 +318,8 @@ fun SignUpScreen(
 
                     TextButton(
                         onClick = { onAction(SignupAction.OnLoginClick) },
-                        contentPadding = PaddingValues(horizontal = 4.dp)
+                        contentPadding = PaddingValues(horizontal = 4.dp),
+                        modifier = Modifier.testTag("loginNavButton")
                     ) {
                         Text(
                             text = "Log in",
