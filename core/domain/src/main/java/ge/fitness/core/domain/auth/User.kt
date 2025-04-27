@@ -1,4 +1,4 @@
-package ge.fitness.core.domain
+package ge.fitness.core.domain.auth
 
 data class User(
     val id : String,

@@ -4,7 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
-import ge.fitness.core.domain.User
+import ge.fitness.core.domain.auth.User
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 

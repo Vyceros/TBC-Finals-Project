@@ -7,9 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -20,12 +17,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import ge.fitness.core.presentation.design_system.R
+import ge.fitness.core.presentation.design_system.icon.VisibilityOff
+import ge.fitness.core.presentation.design_system.icon.VisibilityOn
 import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 
 
@@ -37,8 +34,8 @@ fun MomentumPasswordTextField(
     label: String,
     placeholder: String = "",
     isError: Boolean = false,
-    isPasswordVisible : Boolean = false,
-    onTogglePasswordVisibility : () -> Unit,
+    isPasswordVisible: Boolean = false,
+    onTogglePasswordVisibility: () -> Unit,
     errorMessage: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -63,6 +60,7 @@ fun MomentumPasswordTextField(
             placeholder = {
                 Text(
                     text = placeholder,
+                    color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.bodyMedium
                 )
             },
@@ -75,12 +73,7 @@ fun MomentumPasswordTextField(
             trailingIcon = {
                 IconButton(onClick = onTogglePasswordVisibility) {
                     Icon(
-                        painter = painterResource(
-                            id = if (isPasswordVisible)
-                                R.drawable.ic_visibility_on
-                            else
-                                R.drawable.ic_visibility_off
-                        ),
+                        imageVector = if (isPasswordVisible) VisibilityOn else VisibilityOff,
                         contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
                     )
                 }
@@ -105,7 +98,7 @@ fun MomentumPasswordTextField(
 
 @AppPreview
 @Composable
-fun PasswordPreview(){
+fun PasswordPreview() {
     MomentumTheme {
         Surface {
             MomentumPasswordTextField(
@@ -122,7 +115,7 @@ fun PasswordPreview(){
 
 @AppPreview
 @Composable
-fun PasswordErrorPreview(){
+fun PasswordErrorPreview() {
     MomentumTheme {
         Surface {
             MomentumPasswordTextField(

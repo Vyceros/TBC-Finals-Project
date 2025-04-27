@@ -1,6 +1,5 @@
 package ge.fitness.auth.presentation.signup
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,21 +17,20 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -44,31 +42,44 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ge.fitness.auth.presentation.R
 import ge.fitness.core.presentation.design_system.component.AppPreview
+import ge.fitness.core.presentation.design_system.component.MomentumCard
 import ge.fitness.core.presentation.design_system.component.MomentumPasswordTextField
 import ge.fitness.core.presentation.design_system.component.MomentumTextField
 import ge.fitness.core.presentation.design_system.component.OutlinedMomentumButton
+import ge.fitness.core.presentation.design_system.icon.GmailIcon
+import ge.fitness.core.presentation.design_system.icon.GoBackIcon
 import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 import ge.fitness.core.presentation.ui.HandleEvents
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun SignUpScreenRoot(
     viewModel: SignUpViewModel = hiltViewModel(),
+    onBackClick: () -> Unit,
+    snackbarHostState: SnackbarHostState,
     onNavigateLogin: () -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
     HandleEvents(viewModel.events) { events ->
         when (events) {
             SignUpEvent.Success -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        context.getString(R.string.register_successful)
+                    )
+                }
                 onNavigateLogin()
+
             }
 
             is SignUpEvent.ShowError -> {
-                Toast.makeText(
-                    context,
-                    events.error?.let { context.getString(it) },
-                    Toast.LENGTH_SHORT
-                ).show()
+                val message = events.error?.let { context.getString(it) }
+                    ?: context.getString(R.string.an_error_occurred)
+                scope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
             }
         }
     }
@@ -81,7 +92,8 @@ fun SignUpScreenRoot(
                 else -> Unit
             }
             viewModel.onAction(action)
-        }
+        },
+        onBackClick = onBackClick
     )
 }
 
@@ -89,248 +101,235 @@ fun SignUpScreenRoot(
 @Composable
 fun SignUpScreen(
     state: SignUpState,
-    onAction: (SignupAction) -> Unit
+    onAction: (SignupAction) -> Unit,
+    onBackClick: () -> Unit
 ) {
-    MomentumTheme {
-        Box(
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
             ) {
-                // Toolbar
+
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.align(Alignment.CenterStart)
+                ) {
+                    Icon(
+                        imageVector = GoBackIcon,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                }
+
+                Text(
+                    text = "Create Account",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "Let's Start!",
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(bottom = 24.dp)
+            )
+
+            MomentumCard(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    MomentumTextField(
+                        value = state.fullName,
+                        onValueChange = { onAction(SignupAction.OnFullNameChanged(it)) },
+                        label = "Full name",
+                        placeholder = "Enter your full name",
+                        isError = state.fullNameError != null,
+                        errorMessage = state.fullNameError?.let { stringResource(id = it) }
+                    )
+
+                    MomentumTextField(
+                        value = state.email,
+                        onValueChange = { onAction(SignupAction.OnEmailChanged(it)) },
+                        label = "Email",
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        placeholder = "Enter your email",
+                        isError = state.emailError != null,
+                        errorMessage = state.emailError?.let { stringResource(id = it) }
+                    )
+
+                    MomentumPasswordTextField(
+                        value = state.password,
+                        onValueChange = { onAction(SignupAction.OnPasswordChanged(it)) },
+                        label = "Password",
+                        isPasswordVisible = state.isPasswordVisible,
+                        placeholder = "Enter your password",
+                        isError = state.passwordError != null,
+                        errorMessage = state.passwordError?.let { stringResource(id = it) },
+                        onTogglePasswordVisibility = {
+                            onAction(SignupAction.OnTogglePasswordVisibility)
+                        }
+                    )
+
+                    MomentumPasswordTextField(
+                        value = state.confirmPassword,
+                        onValueChange = { onAction(SignupAction.OnRepeatPasswordChanged(it)) },
+                        label = stringResource(R.string.confirm_password),
+                        isPasswordVisible = state.isConfirmPasswordVisible,
+                        placeholder = stringResource(R.string.confirm_your_password),
+                        isError = state.confirmPasswordError != null,
+                        errorMessage = state.confirmPasswordError?.let { stringResource(id = it) },
+                        onTogglePasswordVisibility = {
+                            onAction(SignupAction.OnToggleConfirmPasswordVisibility)
+                        }
+                    )
+                }
+            }
+
+            Text(
+                buildAnnotatedString {
+                    append(stringResource(R.string.by_continuing_you_agree_to))
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.secondary,
+                            textDecoration = TextDecoration.Underline
+                        )
+                    ) {
+                        append(stringResource(R.string.terms_of_use))
+                    }
+                    append(stringResource(R.string.and))
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.secondary,
+                            textDecoration = TextDecoration.Underline
+                        )
+                    ) {
+                        append(stringResource(R.string.privacy_policy))
+                    }
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+
+            OutlinedMomentumButton(
+                onClick = {
+                    onAction(
+                        SignupAction.OnRegisterClick(
+                            state.email,
+                            state.password,
+                            state.fullName
+                        )
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                content = {
+                    if (state.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .testTag("signupProgressIndicator"),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(text = stringResource(id = R.string.sign_up))
+                    }
+                },
+                isEnabled = (!state.isLoading &&
+                        state.fullNameError == null &&
+                        state.emailError == null &&
+                        state.passwordError == null &&
+                        state.confirmPasswordError == null &&
+                        state.fullName.isNotBlank() &&
+                        state.email.isNotBlank() &&
+                        state.password.isNotBlank() &&
+                        state.confirmPassword.isNotBlank() &&
+                        state.password == state.confirmPassword)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = stringResource(id = R.string.or_sign_up_with),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surface),
+                    contentAlignment = Alignment.Center
                 ) {
-
-                    IconButton(
-                        onClick = { onAction(SignupAction.OnLoginClick) },
-                        modifier = Modifier.align(Alignment.CenterStart)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_back_button),
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                    }
-
-                    // Title
-                    Text(
-                        text = "Create Account",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.align(Alignment.Center)
+                    Image(
+                        imageVector = GmailIcon,
+                        contentDescription = stringResource(id = R.string.google_login),
+                        modifier = Modifier.size(24.dp)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+            }
 
-                // Let's Start!
+            Spacer(modifier = Modifier.weight(1f))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(bottom = 16.dp)
+            ) {
                 Text(
-                    text = "Let's Start!",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(bottom = 24.dp)
+                    text = stringResource(R.string.already_have_an_account),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
-                // Form section
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 24.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        // Full name field
-                        MomentumTextField(
-                            value = state.fullName,
-                            onValueChange = { onAction(SignupAction.OnFullNameChanged(it)) },
-                            label = "Full name",
-                            placeholder = "Enter your full name",
-                            isError = state.fullNameError != null,
-                            errorMessage = state.fullNameError?.let { stringResource(id = it) }
-                        )
-
-                        // Email field
-                        MomentumTextField(
-                            value = state.email,
-                            onValueChange = { onAction(SignupAction.OnEmailChanged(it)) },
-                            label = "Email",
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                            placeholder = "Enter your email",
-                            isError = state.emailError != null,
-                            errorMessage = state.emailError?.let { stringResource(id = it) }
-                        )
-
-                        // Password field
-                        MomentumPasswordTextField(
-                            value = state.password,
-                            onValueChange = { onAction(SignupAction.OnPasswordChanged(it)) },
-                            label = "Password",
-                            isPasswordVisible = state.isPasswordVisible,
-                            placeholder = "Enter your password",
-                            isError = state.passwordError != null,
-                            errorMessage = state.passwordError?.let { stringResource(id = it) },
-                            onTogglePasswordVisibility = {
-                                onAction(SignupAction.OnTogglePasswordVisibility)
-                            }
-                        )
-
-                        // Confirm Password field
-                        MomentumPasswordTextField(
-                            value = state.confirmPassword,
-                            onValueChange = { onAction(SignupAction.OnRepeatPasswordChanged(it)) },
-                            label = "Confirm Password",
-                            isPasswordVisible = state.isConfirmPasswordVisible,
-                            placeholder = "Confirm your password",
-                            isError = state.confirmPasswordError != null,
-                            errorMessage = state.confirmPasswordError?.let { stringResource(id = it) },
-                            onTogglePasswordVisibility = {
-                                onAction(SignupAction.OnToggleConfirmPasswordVisibility)
-                            }
-                        )
-                    }
-                }
-
-                // Terms and Privacy section
-                Text(
-                    buildAnnotatedString {
-                        append("By continuing, you agree to ")
-                        withStyle(
-                            style = SpanStyle(
-                                color = MaterialTheme.colorScheme.secondary,
-                                textDecoration = TextDecoration.Underline
-                            )
-                        ) {
-                            append("Terms of Use")
-                        }
-                        append(" and ")
-                        withStyle(
-                            style = SpanStyle(
-                                color = MaterialTheme.colorScheme.secondary,
-                                textDecoration = TextDecoration.Underline
-                            )
-                        ) {
-                            append("Privacy Policy")
-                        }
-                        append(".")
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
-
-                OutlinedMomentumButton(
-                    onClick = {
-                        onAction(
-                            SignupAction.OnRegisterClick(
-                                state.email,
-                                state.password,
-                                state.fullName
-                            )
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    content = {
-                        if (state.isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier
-                                    .size(24.dp)
-                                     .testTag("signupProgressIndicator"),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                strokeWidth = 2.dp
-                            )
-                        } else {
-                            Text(text = "Sign Up")
-                        }
-                    },
-                    isEnabled = (!state.isLoading &&
-                            state.fullNameError == null &&
-                            state.emailError == null &&
-                            state.passwordError == null &&
-                            state.confirmPasswordError == null &&
-                            state.fullName.isNotBlank() &&
-                            state.email.isNotBlank() &&
-                            state.password.isNotBlank() &&
-                            state.confirmPassword.isNotBlank() &&
-                            state.password == state.confirmPassword)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // or sign up with
-                Text(
-                    text = "or sign up with",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Social login options
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // Google login button
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surface),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_gmail),
-                            contentDescription = "Google Login",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Already have an account
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                TextButton(
+                    onClick = { onAction(SignupAction.OnLoginClick) },
+                    contentPadding = PaddingValues(horizontal = 4.dp),
+                    modifier = Modifier.testTag("loginNavButton")
                 ) {
                     Text(
-                        text = "Already have an account? ",
+                        text = stringResource(id = R.string.log_in),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.secondary
                     )
-
-                    TextButton(
-                        onClick = { onAction(SignupAction.OnLoginClick) },
-                        contentPadding = PaddingValues(horizontal = 4.dp),
-                        modifier = Modifier.testTag("loginNavButton")
-                    ) {
-                        Text(
-                            text = "Log in",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                    }
                 }
             }
         }
     }
+
 }
 
 @AppPreview
@@ -340,8 +339,9 @@ fun SignUpScreenPreview() {
         SignUpScreen(
             state = SignUpState(
                 isRegisterEnabled = true
-            )
-        ){
+            ),
+            onAction = {}
+        ) {
 
         }
     }

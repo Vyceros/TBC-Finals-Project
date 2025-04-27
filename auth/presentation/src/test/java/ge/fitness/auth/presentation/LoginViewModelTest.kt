@@ -1,14 +1,14 @@
-package ge.fitness.momentum
+package ge.fitness.auth.presentation
 
-import ge.fitness.auth.domain.AuthRepository
-import ge.fitness.auth.domain.usecase.ValidateEmailUseCase
-import ge.fitness.auth.domain.usecase.ValidatePasswordUseCase
-import ge.fitness.auth.domain.usecase.ValidationResult
+import ge.fitness.auth.domain.auth.LoginUseCase
+import ge.fitness.auth.domain.validation.ValidateEmailUseCase
+import ge.fitness.auth.domain.validation.ValidatePasswordUseCase
+import ge.fitness.auth.domain.validation.ValidationResult
 import ge.fitness.auth.presentation.login.LoginAction
 import ge.fitness.auth.presentation.login.LoginEvent
 import ge.fitness.auth.presentation.login.LoginViewModel
-import ge.fitness.core.domain.User
-import ge.fitness.core.domain.util.AuthError
+import ge.fitness.core.domain.auth.AuthError
+import ge.fitness.core.domain.auth.User
 import ge.fitness.core.domain.util.Resource
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -16,6 +16,7 @@ import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -33,7 +34,7 @@ class LoginViewModelTest {
     private lateinit var viewModel: LoginViewModel
     private lateinit var validateEmailUseCase: ValidateEmailUseCase
     private lateinit var validatePasswordUseCase: ValidatePasswordUseCase
-    private lateinit var authRepository: AuthRepository
+    private lateinit var loginUseCase: LoginUseCase
     private val testDispatcher = UnconfinedTestDispatcher()
     private val mockUser = User(
         id = "user123",
@@ -47,11 +48,11 @@ class LoginViewModelTest {
         Dispatchers.setMain(testDispatcher)
         validateEmailUseCase = mockk()
         validatePasswordUseCase = mockk()
-        authRepository = mockk()
+        loginUseCase = mockk()
         viewModel = LoginViewModel(
             validateEmailUseCase,
             validatePasswordUseCase,
-            authRepository
+            loginUseCase
         )
     }
 
@@ -153,8 +154,7 @@ class LoginViewModelTest {
         val password = "Password123"
 
         // Mock repository to return success response
-        coEvery { authRepository.signIn(email, password) } returns Resource.Success(mockUser)
-
+        coEvery { loginUseCase(email, password) } returns flowOf(Resource.Success(mockUser))
         // When
         viewModel.onAction(LoginAction.OnLoginClick(email, password))
 
@@ -171,7 +171,7 @@ class LoginViewModelTest {
         val loginError = AuthError.LoginError.INVALID_PASSWORD
 
         // Mock repository to return error response
-        coEvery { authRepository.signIn(email, password) } returns Resource.Error(loginError)
+        coEvery { loginUseCase(email, password) } returns flowOf(Resource.Error(loginError))
 
         // When
         viewModel.onAction(LoginAction.OnLoginClick(email, password))
@@ -188,7 +188,7 @@ class LoginViewModelTest {
         val password = "Password123"
 
         // Modify the implementation to return Loading first, then delay, then Success
-        coEvery { authRepository.signIn(email, password) } returns Resource.Loading
+        coEvery { loginUseCase(email, password) } returns flowOf(Resource.Loading)
 
         // When
         viewModel.onAction(LoginAction.OnLoginClick(email, password))

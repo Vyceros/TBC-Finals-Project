@@ -1,13 +1,9 @@
-package ge.fitness.auth.domain.usecase
+package ge.fitness.auth.domain.validation
 
-import javax.inject.Inject
 
-interface ValidatePasswordUseCase {
-    operator fun invoke(password: String): ValidationResult
-}
 
-class ValidatePasswordUseCaseImpl @Inject constructor() : ValidatePasswordUseCase {
-    override operator fun invoke(password: String): ValidationResult {
+class ValidatePasswordUseCase {
+    operator fun invoke(password: String): ValidationResult {
         return when {
             password.isEmpty() -> ValidationResult.PasswordError.EMPTY
             password.length < 6 -> ValidationResult.PasswordError.TOO_SHORT

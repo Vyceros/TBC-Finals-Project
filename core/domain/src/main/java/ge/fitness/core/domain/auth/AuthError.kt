@@ -1,4 +1,6 @@
-package ge.fitness.core.domain.util
+package ge.fitness.core.domain.auth
+
+import ge.fitness.core.domain.util.Error
 
 sealed interface AuthError : Error {
     enum class LoginError : AuthError {
@@ -8,7 +10,7 @@ sealed interface AuthError : Error {
         UNKNOWN
     }
 
-    enum class RegisterError : AuthError{
+    enum class RegisterError : AuthError {
         USER_ALREADY_EXISTS,
         INVALID_EMAIL,
         INVALID_PASSWORD,

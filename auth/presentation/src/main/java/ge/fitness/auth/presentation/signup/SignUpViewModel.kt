@@ -6,17 +6,17 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ge.fitness.auth.domain.AuthRepository
-import ge.fitness.auth.domain.usecase.ValidateEmailUseCase
-import ge.fitness.auth.domain.usecase.ValidateFullNameUseCase
-import ge.fitness.auth.domain.usecase.ValidatePasswordMatchUseCase
-import ge.fitness.auth.domain.usecase.ValidatePasswordUseCase
-import ge.fitness.auth.domain.usecase.ValidationResult
-import ge.fitness.auth.presentation.R
+import ge.fitness.auth.domain.auth.SignUpUseCase
+import ge.fitness.auth.domain.validation.ValidateEmailUseCase
+import ge.fitness.auth.domain.validation.ValidateFullNameUseCase
+import ge.fitness.auth.domain.validation.ValidatePasswordMatchUseCase
+import ge.fitness.auth.domain.validation.ValidatePasswordUseCase
+import ge.fitness.auth.domain.validation.ValidationResult
 import ge.fitness.auth.presentation.utils.toStringRes
 import ge.fitness.core.domain.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +27,7 @@ class SignUpViewModel @Inject constructor(
     private val validatePasswordUseCase: ValidatePasswordUseCase,
     private val validatePasswordMatchUseCase: ValidatePasswordMatchUseCase,
     private val validateFullNameUseCase: ValidateFullNameUseCase,
-    private val authRepository: AuthRepository
+    private val signUpUseCase: SignUpUseCase
 ) : ViewModel() {
 
     var state by mutableStateOf(SignUpState())
@@ -127,20 +127,24 @@ class SignUpViewModel @Inject constructor(
 
 
     private fun register(email: String, password: String, fullName: String) {
-        state = state.copy(isLoading = true)
-
         viewModelScope.launch(Dispatchers.IO) {
-            when (val result = authRepository.signUp(email, password, fullName)) {
-                is Resource.Error -> {
-                    state = state.copy(isLoading = false)
-                    _events.send(SignUpEvent.ShowError(result.error.toStringRes()))
+            signUpUseCase(email, password, fullName).collectLatest { response ->
+                when (response) {
+                    is Resource.Error -> {
+                        state = state.copy(isLoading = false)
+                        _events.send(SignUpEvent.ShowError(response.error.toStringRes()))
+                    }
+
+                    Resource.Loading -> {
+                        state = state.copy(isLoading = true)
+                    }
+
+                    is Resource.Success -> {
+                        state = state.copy(isLoading = false)
+                        _events.send(SignUpEvent.Success)
+                    }
                 }
 
-                is Resource.Loading -> Unit
-                is Resource.Success -> {
-                    state = state.copy(isLoading = false)
-                    _events.send(SignUpEvent.Success)
-                }
             }
         }
     }

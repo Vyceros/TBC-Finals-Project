@@ -1,16 +1,16 @@
-package ge.fitness.momentum
+package ge.fitness.auth.presentation
 
-import ge.fitness.auth.domain.AuthRepository
-import ge.fitness.auth.domain.usecase.ValidateEmailUseCase
-import ge.fitness.auth.domain.usecase.ValidateFullNameUseCase
-import ge.fitness.auth.domain.usecase.ValidatePasswordMatchUseCase
-import ge.fitness.auth.domain.usecase.ValidatePasswordUseCase
-import ge.fitness.auth.domain.usecase.ValidationResult
+import ge.fitness.auth.domain.auth.SignUpUseCase
+import ge.fitness.auth.domain.validation.ValidateEmailUseCase
+import ge.fitness.auth.domain.validation.ValidateFullNameUseCase
+import ge.fitness.auth.domain.validation.ValidatePasswordMatchUseCase
+import ge.fitness.auth.domain.validation.ValidatePasswordUseCase
+import ge.fitness.auth.domain.validation.ValidationResult
 import ge.fitness.auth.presentation.signup.SignUpEvent
 import ge.fitness.auth.presentation.signup.SignUpViewModel
 import ge.fitness.auth.presentation.signup.SignupAction
-import ge.fitness.core.domain.User
-import ge.fitness.core.domain.util.AuthError
+import ge.fitness.core.domain.auth.AuthError
+import ge.fitness.core.domain.auth.User
 import ge.fitness.core.domain.util.Resource
 import io.mockk.coEvery
 import io.mockk.every
@@ -19,6 +19,7 @@ import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -38,7 +39,7 @@ class SignUpViewModelTest {
     private lateinit var validatePasswordUseCase: ValidatePasswordUseCase
     private lateinit var validatePasswordMatchUseCase: ValidatePasswordMatchUseCase
     private lateinit var validateFullNameUseCase: ValidateFullNameUseCase
-    private lateinit var authRepository: AuthRepository
+    private lateinit var signUpUseCase: SignUpUseCase
     private val testDispatcher = UnconfinedTestDispatcher()
     private val mockUser = User(
         id = "user123",
@@ -54,14 +55,14 @@ class SignUpViewModelTest {
         validatePasswordUseCase = mockk(relaxed = true)
         validatePasswordMatchUseCase = mockk(relaxed = true)
         validateFullNameUseCase = mockk(relaxed = true)
-        authRepository = mockk(relaxed = true)
+        signUpUseCase = mockk(relaxed = true)
 
         viewModel = SignUpViewModel(
             validateEmailUseCase,
             validatePasswordUseCase,
             validatePasswordMatchUseCase,
             validateFullNameUseCase,
-            authRepository
+            signUpUseCase
         )
     }
 
@@ -212,7 +213,7 @@ class SignUpViewModelTest {
         val fullName = "John Doe"
 
         // Set up the mock BEFORE calling the action
-        coEvery { authRepository.signUp(email, password, fullName) } returns Resource.Success(mockUser)
+        coEvery { signUpUseCase(email, password, fullName) } returns flowOf(Resource.Success(mockUser))
 
         // When
         viewModel.onAction(SignupAction.OnRegisterClick(email, password, fullName))
@@ -231,7 +232,7 @@ class SignUpViewModelTest {
         val signUpError = AuthError.RegisterError.USER_ALREADY_EXISTS
 
         // Mock repository to return error response
-        coEvery { authRepository.signUp(email, password, fullName) } returns Resource.Error(signUpError)
+        coEvery { signUpUseCase(email, password, fullName) } returns flowOf(Resource.Error(signUpError))
 
         // When
         viewModel.onAction(SignupAction.OnRegisterClick(email, password, fullName))
@@ -249,7 +250,7 @@ class SignUpViewModelTest {
         val fullName = "John Doe"
 
         // Set up the mock BEFORE calling the action
-        coEvery { authRepository.signUp(email, password, fullName) } returns Resource.Loading
+        coEvery { signUpUseCase(email, password, fullName) } returns flowOf(Resource.Loading)
 
         // When
         viewModel.onAction(SignupAction.OnRegisterClick(email, password, fullName))

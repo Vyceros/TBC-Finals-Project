@@ -46,7 +46,8 @@ fun MomentumTextField(
             modifier = Modifier.fillMaxWidth(),
             placeholder = {
                 Text(
-                    text = placeholder
+                    text = placeholder,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             },
             isError = isError,

@@ -1,8 +1,7 @@
-package ge.fitness.momentum
+package ge.fitness.auth.presentation
 
-import ge.fitness.auth.domain.usecase.ValidateEmailUseCase
-import ge.fitness.auth.domain.usecase.ValidateEmailUseCaseImpl
-import ge.fitness.auth.domain.usecase.ValidationResult
+import ge.fitness.auth.domain.validation.ValidateEmailUseCase
+import ge.fitness.auth.domain.validation.ValidationResult
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -14,7 +13,7 @@ class ValidateEmailUseCaseTest {
 
     @Before
     fun setUp() {
-        validateEmailUseCase = ValidateEmailUseCaseImpl()
+        validateEmailUseCase = ValidateEmailUseCase()
     }
 
     @Test

@@ -1,25 +1,29 @@
 package ge.fitness.auth.data
 
 import com.google.firebase.auth.FirebaseAuthException
-import ge.fitness.auth.domain.AuthRepository
-import ge.fitness.core.domain.User
-import ge.fitness.core.domain.util.AuthError
+import ge.fitness.auth.domain.auth.AuthRepository
+import ge.fitness.core.domain.auth.User
+import ge.fitness.core.domain.auth.AuthError
+import ge.fitness.core.domain.util.NetworkHandler
 import ge.fitness.core.domain.util.Resource
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    private val dataSource: FirebaseAuthDataSource
+    private val dataSource: FirebaseAuthDataSource,
+    private val safeCall: NetworkHandler
 ) : AuthRepository {
     override suspend fun signIn(
         email: String,
         password: String
-    ): Resource<User, AuthError.LoginError> {
-        return try {
-            Resource.Loading
-            val user = dataSource.signIn(email, password)
-            Resource.Success(user)
-        } catch (e: FirebaseAuthException) {
-            Resource.Error(mapFirebaseLoginError(e))
+    ): Flow<Resource<User, AuthError.LoginError>> {
+        return safeCall.wrapWithResourceFlow(
+            errorMapper = { error ->
+                if (error is FirebaseAuthException) mapFirebaseLoginError(error)
+                else AuthError.LoginError.UNKNOWN
+            }
+        ) {
+            dataSource.signIn(email, password)
         }
     }
 
@@ -27,13 +31,14 @@ class AuthRepositoryImpl @Inject constructor(
         email: String,
         password: String,
         fullName: String
-    ): Resource<User, AuthError.RegisterError> {
-        return try {
-            Resource.Loading
-            val user = dataSource.signUp(email, password, fullName)
-            Resource.Success(user)
-        } catch (e: FirebaseAuthException) {
-            Resource.Error(mapFirebaseRegisterError(e))
+    ): Flow<Resource<User, AuthError.RegisterError>> {
+        return safeCall.wrapWithResourceFlow(
+            errorMapper = { error ->
+                if (error is FirebaseAuthException) mapFirebaseRegisterError(error)
+                else AuthError.RegisterError.UNKNOWN
+            }
+        ) {
+            dataSource.signUp(email, password, fullName)
         }
     }
 

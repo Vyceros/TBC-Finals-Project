@@ -30,4 +30,15 @@
     <string name="fullname_blank">Full name cannot be blank</string>
     <string name="fullname_too_short">Full name is too short</string>
     <string name="validation_error">Validation Error</string>
+    <string name="by_continuing_you_agree_to">"By continuing, you agree to "</string>
+    <string name="terms_of_use">Terms of Use</string>
+    <string name="and">" and "</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="already_have_an_account">"Already have an account? "</string>
+    <string name="auth_title_text">Momentum, your friend on the fitness journey.</string>
+    <string name="momentum">Momentum</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="confirm_your_password">Confirm your password</string>
+    <string name="register_successful">Register successful</string>
+    <string name="an_error_occurred">An error occurred</string>
 </resources>
