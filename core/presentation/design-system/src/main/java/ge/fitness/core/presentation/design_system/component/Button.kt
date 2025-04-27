@@ -18,8 +18,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light theme", showBackground = true)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark theme", showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light theme", showBackground = true, apiLevel = 34)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark theme", showBackground = true, apiLevel = 34)
 annotation class AppPreview
 
 /**
@@ -107,3 +107,4 @@ private fun OutlinedMomentumButtonPreview() {
         }
     }
 }
+

@@ -61,6 +61,7 @@ fun MomentumTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = MomentumTypography,
-        content = content
+        content = content,
+        shapes = MomentumShapes
     )
 }

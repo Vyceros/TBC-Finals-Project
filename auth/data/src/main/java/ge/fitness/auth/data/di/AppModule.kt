@@ -8,36 +8,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ge.fitness.auth.data.AuthRepositoryImpl
 import ge.fitness.auth.data.FirebaseAuthDataSource
-import ge.fitness.auth.domain.AuthRepository
-import ge.fitness.auth.domain.usecase.ValidateEmailUseCase
-import ge.fitness.auth.domain.usecase.ValidateEmailUseCaseImpl
-import ge.fitness.auth.domain.usecase.ValidateFullNameUseCase
-import ge.fitness.auth.domain.usecase.ValidateFullNameUseCaseImpl
-import ge.fitness.auth.domain.usecase.ValidatePasswordMatchUseCase
-import ge.fitness.auth.domain.usecase.ValidatePasswordMatchUseCaseImpl
-import ge.fitness.auth.domain.usecase.ValidatePasswordUseCase
-import ge.fitness.auth.domain.usecase.ValidatePasswordUseCaseImpl
+import ge.fitness.auth.domain.auth.AuthRepository
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class AppModule {
-
-    @Singleton
-    @Binds
-    abstract fun bindsValidateEmailUseCase(validateEmailImpl: ValidateEmailUseCaseImpl): ValidateEmailUseCase
-
-    @Singleton
-    @Binds
-    abstract fun bindsValidatePasswordUseCase(validatePasswordImpl: ValidatePasswordUseCaseImpl): ValidatePasswordUseCase
-
-    @Singleton
-    @Binds
-    abstract fun bindsValidatePasswordMatchUseCase(validatePasswordMatchImpl: ValidatePasswordMatchUseCaseImpl): ValidatePasswordMatchUseCase
-
-    @Singleton
-    @Binds
-    abstract fun bindsValidateFullNameUseCase(validateFullNameImpl: ValidateFullNameUseCaseImpl): ValidateFullNameUseCase
 
     @Singleton
     @Binds
@@ -53,7 +29,7 @@ abstract class AppModule {
 
         @Provides
         @Singleton
-        fun provideDataSource(auth : FirebaseAuth) : FirebaseAuthDataSource{
+        fun provideDataSource(auth: FirebaseAuth): FirebaseAuthDataSource {
             return FirebaseAuthDataSource(auth)
         }
     }

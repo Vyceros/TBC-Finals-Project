@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Momentum</string>
+    <string name="you_are_offline_some_features_may_not_be_available">You are offline. Some features may not be available.</string>
 </resources>

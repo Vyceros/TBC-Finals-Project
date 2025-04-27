@@ -4,6 +4,6 @@ plugins {
 }
 
 dependencies{
-    implementation("javax.inject:javax.inject:1")
     implementation(projects.core.domain)
+    implementation(libs.kotlinx.coroutines.core)
 }
