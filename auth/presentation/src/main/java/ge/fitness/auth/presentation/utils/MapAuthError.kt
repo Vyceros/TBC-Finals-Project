@@ -1,7 +1,7 @@
 package ge.fitness.auth.presentation.utils
 
 import ge.fitness.auth.presentation.R
-import ge.fitness.core.domain.util.AuthError
+import ge.fitness.core.domain.auth.AuthError
 
 fun AuthError.toStringRes(): Int {
     return when (this) {

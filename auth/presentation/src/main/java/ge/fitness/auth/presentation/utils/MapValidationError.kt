@@ -1,6 +1,6 @@
 package ge.fitness.auth.presentation.utils
 
-import ge.fitness.auth.domain.usecase.ValidationResult
+import ge.fitness.auth.domain.validation.ValidationResult
 import ge.fitness.auth.presentation.R
 
 fun ValidationResult.toStringRes() : Int?{

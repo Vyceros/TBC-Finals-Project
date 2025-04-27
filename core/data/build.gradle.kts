@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.momentum.application.library)
+    alias(libs.plugins.momentum.hilt)
 }
 
 android {

@@ -6,10 +6,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ge.fitness.auth.domain.AuthRepository
-import ge.fitness.auth.domain.usecase.ValidateEmailUseCase
-import ge.fitness.auth.domain.usecase.ValidatePasswordUseCase
-import ge.fitness.auth.domain.usecase.ValidationResult
+import ge.fitness.auth.domain.auth.LoginUseCase
+import ge.fitness.auth.domain.validation.ValidateEmailUseCase
+import ge.fitness.auth.domain.validation.ValidatePasswordUseCase
+import ge.fitness.auth.domain.validation.ValidationResult
 import ge.fitness.auth.presentation.utils.toStringRes
 import ge.fitness.core.domain.util.Resource
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +22,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val validateEmailUseCase: ValidateEmailUseCase,
     private val validatePasswordUseCase: ValidatePasswordUseCase,
-    private val authRepository: AuthRepository
+    private val loginUseCase: LoginUseCase
 ) : ViewModel() {
 
     var state by mutableStateOf(LoginState())
@@ -61,22 +61,21 @@ class LoginViewModel @Inject constructor(
         val isEmailValid = validateEmailUseCase(email)
         state =
             state.copy(
-                isPasswordValid = isEmailValid is ValidationResult.EmailError,
+                isEmailValid = isEmailValid is ValidationResult.Success,
                 email = email,
                 emailError = isEmailValid.toStringRes(),
-                isLoginEnabled = isEmailValid is ValidationResult.Success
+                isLoginEnabled = (isEmailValid is ValidationResult.Success) && (state.isPasswordValid)
             )
     }
-
 
 
     private fun validatePassword(password: String) {
         val isPasswordValid = validatePasswordUseCase(password)
         state = state.copy(
-            isPasswordValid = isPasswordValid is ValidationResult.PasswordError,
+            isPasswordValid = isPasswordValid is ValidationResult.Success,
             passwordError = isPasswordValid.toStringRes(),
             password = password,
-            isLoginEnabled = isPasswordValid is ValidationResult.Success
+            isLoginEnabled = (isPasswordValid is ValidationResult.Success) && (state.isEmailValid)
         )
     }
 
@@ -84,15 +83,21 @@ class LoginViewModel @Inject constructor(
         state = state.copy(isLoading = true)
 
         viewModelScope.launch(Dispatchers.IO) {
-            when (val result = authRepository.signIn(email, password)) {
-                is Resource.Error -> {
-                    _events.send(LoginEvent.ShowError(result.error.toStringRes()))
-                }
+            loginUseCase(email, password).collect { response ->
+                when (response) {
+                    is Resource.Error -> {
+                        state = state.copy(isLoading = false)
+                        _events.send(LoginEvent.ShowError(response.error.toStringRes()))
+                    }
 
-                is Resource.Loading -> {}
-                is Resource.Success -> {
-                    state = state.copy(isLoading = false)
-                    _events.send(LoginEvent.LoginSuccess)
+                    Resource.Loading -> {
+                        state = state.copy(isLoading = true)
+                    }
+
+                    is Resource.Success -> {
+                        state = state.copy(isLoading = false)
+                        _events.send(LoginEvent.LoginSuccess)
+                    }
                 }
             }
         }
