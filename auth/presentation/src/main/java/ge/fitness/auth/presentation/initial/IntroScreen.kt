@@ -22,8 +22,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ge.fitness.auth.presentation.R
 import ge.fitness.auth.presentation.utils.getVectorFromString
 import ge.fitness.core.presentation.design_system.component.AppPreview
 import ge.fitness.core.presentation.design_system.component.IntroSlideItem
@@ -60,7 +62,7 @@ fun ActiveLifestyleBanner() {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Start Your Journey Towards A More Active Lifestyle",
+                    text = stringResource(R.string.start_your_journey_towards_a_more_active_lifestyle),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
@@ -68,28 +70,30 @@ fun ActiveLifestyleBanner() {
         }
     }
 }
-val introSlides = listOf(
-    PagerItem(
-        icon = "Running",
-        title = "Start Your Journey Towards A More Active Lifestyle",
-        backgroundImageRes = ge.fitness.core.presentation.design_system.R.drawable.ic_back_button
-    ),
-    PagerItem(
-        icon = "Nutrition",
-        title = "Learn About Proper Nutrition And Healthy Habits",
-        backgroundImageRes = ge.fitness.core.presentation.design_system.R.drawable.ic_back_button
-    ),
-    PagerItem(
-        icon = "Community",
-        title = "Join Our Community And Track Your Progress",
-        backgroundImageRes = ge.fitness.core.presentation.design_system.R.drawable.ic_back_button,
-        isLastSlide = true
-    )
-)
+
 @Composable
 fun IntroPager(
     onButtonClick : () -> Unit
 ) {
+    val introSlides = listOf(
+        PagerItem(
+            icon = "Running",
+            title = stringResource(R.string.start_your_journey_towards_a_more_active_lifestyle),
+            backgroundImageRes = ge.fitness.core.presentation.design_system.R.drawable.ic_back_button
+        ),
+        PagerItem(
+            icon = "Nutrition",
+            title = stringResource(R.string.learn_about_proper_nutrition_and_healthy_habits),
+            backgroundImageRes = ge.fitness.core.presentation.design_system.R.drawable.ic_back_button
+        ),
+        PagerItem(
+            icon = "Community",
+            title = stringResource(R.string.join_our_community_and_track_your_progress),
+            backgroundImageRes = ge.fitness.core.presentation.design_system.R.drawable.ic_back_button,
+            isLastSlide = true
+        )
+    )
+
     val pagerState = rememberPagerState(pageCount = { introSlides.size })
     val coroutineScope = rememberCoroutineScope()
 

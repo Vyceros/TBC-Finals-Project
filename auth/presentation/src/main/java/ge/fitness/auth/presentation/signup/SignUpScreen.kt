@@ -135,7 +135,7 @@ fun SignUpScreen(
                 }
 
                 Text(
-                    text = "Create Account",
+                    text = stringResource(R.string.create_account),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.align(Alignment.Center)
@@ -145,7 +145,7 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Let's Start!",
+                text = stringResource(R.string.let_s_start),
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(bottom = 24.dp)
@@ -163,8 +163,8 @@ fun SignUpScreen(
                     MomentumTextField(
                         value = state.fullName,
                         onValueChange = { onAction(SignupAction.OnFullNameChanged(it)) },
-                        label = "Full name",
-                        placeholder = "Enter your full name",
+                        label = stringResource(R.string.full_name),
+                        placeholder = stringResource(R.string.enter_your_full_name),
                         isError = state.fullNameError != null,
                         errorMessage = state.fullNameError?.let { stringResource(id = it) }
                     )
@@ -172,9 +172,9 @@ fun SignUpScreen(
                     MomentumTextField(
                         value = state.email,
                         onValueChange = { onAction(SignupAction.OnEmailChanged(it)) },
-                        label = "Email",
+                        label = stringResource(R.string.email),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        placeholder = "Enter your email",
+                        placeholder = stringResource(R.string.enter_your_email),
                         isError = state.emailError != null,
                         errorMessage = state.emailError?.let { stringResource(id = it) }
                     )
@@ -182,9 +182,9 @@ fun SignUpScreen(
                     MomentumPasswordTextField(
                         value = state.password,
                         onValueChange = { onAction(SignupAction.OnPasswordChanged(it)) },
-                        label = "Password",
+                        label = stringResource(R.string.password),
                         isPasswordVisible = state.isPasswordVisible,
-                        placeholder = "Enter your password",
+                        placeholder = stringResource(R.string.enter_your_password),
                         isError = state.passwordError != null,
                         errorMessage = state.passwordError?.let { stringResource(id = it) },
                         onTogglePasswordVisibility = {
