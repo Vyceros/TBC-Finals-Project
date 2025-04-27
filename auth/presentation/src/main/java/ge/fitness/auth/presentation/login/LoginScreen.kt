@@ -56,7 +56,6 @@ fun LoginScreenRoot(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     HandleEvents(viewModel.events) { events ->
         when (events) {
             LoginEvent.LoginSuccess -> {
