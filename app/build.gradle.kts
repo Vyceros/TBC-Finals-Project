@@ -42,6 +42,8 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.domain)
 
+    implementation(projects.workout.presentation)
+
     implementation(projects.auth.domain)
     implementation(projects.auth.data)
     implementation(projects.auth.presentation)

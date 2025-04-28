@@ -1,4 +1,4 @@
-package ge.fitness.core.datastore
+package ge.fitness.workout.presentation
 
 import org.junit.Test
 

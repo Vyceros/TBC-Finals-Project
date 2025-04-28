@@ -11,6 +11,8 @@ import ge.fitness.auth.domain.validation.ValidateEmailUseCase
 import ge.fitness.auth.domain.validation.ValidatePasswordUseCase
 import ge.fitness.auth.domain.validation.ValidationResult
 import ge.fitness.auth.presentation.utils.toStringRes
+import ge.fitness.core.domain.model.DataStoreHelper
+import ge.fitness.core.domain.model.DataStoreKeys
 import ge.fitness.core.domain.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -22,7 +24,8 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val validateEmailUseCase: ValidateEmailUseCase,
     private val validatePasswordUseCase: ValidatePasswordUseCase,
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val dataStoreHelper: DataStoreHelper
 ) : ViewModel() {
 
     var state by mutableStateOf(LoginState())
@@ -79,6 +82,12 @@ class LoginViewModel @Inject constructor(
         )
     }
 
+    private suspend fun setLoginStatus(isLoggedIn: Boolean, rememberMe: Boolean) {
+        dataStoreHelper.addPreference(DataStoreKeys.IsLoggedIn, isLoggedIn)
+        dataStoreHelper.addPreference(DataStoreKeys.RememberMe, rememberMe)
+    }
+
+
     private fun login(email: String, password: String) {
         state = state.copy(isLoading = true)
 
@@ -95,6 +104,8 @@ class LoginViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
+                        setLoginStatus(isLoggedIn = true, rememberMe = state.rememberMe)
+
                         state = state.copy(isLoading = false)
                         _events.send(LoginEvent.LoginSuccess)
                     }

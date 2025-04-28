@@ -10,17 +10,19 @@ import ge.fitness.auth.presentation.signup.SignUpScreenRoot
 
 fun NavController.navigateToLogin() {
     navigate(AuthRoutes.Login) {
-        popUpTo(AuthRoutes.Login) {
+        popUpTo(0) {
             inclusive = true
         }
+        launchSingleTop = true
     }
 }
 
 fun NavController.navigateToSignUp() {
     navigate(AuthRoutes.Register) {
-        popUpTo(AuthRoutes.Register) {
+        popUpTo(AuthRoutes.Intro) {
             inclusive = true
         }
+        launchSingleTop = true
     }
 }
 

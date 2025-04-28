@@ -21,6 +21,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import ge.fitness.core.data.util.ConnectivityManager
+import ge.fitness.core.domain.model.DataStoreHelper
 import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 import ge.fitness.momentum.navigation.MomentumNavHost
 import ge.fitness.momentum.presentation.ui.util.AppPreview
@@ -33,6 +34,10 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var connectivityManager: ConnectivityManager
+
+    @Inject
+    lateinit var dataStoreHelper: DataStoreHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
 
@@ -97,7 +102,7 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            MomentumNavHost(connectivityManager)
+            MomentumNavHost(connectivityManager,dataStoreHelper)
         }
     }
 

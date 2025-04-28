@@ -1,6 +1,5 @@
 package ge.fitness.auth.presentation.signup
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -46,7 +43,6 @@ import ge.fitness.core.presentation.design_system.component.MomentumCard
 import ge.fitness.core.presentation.design_system.component.MomentumPasswordTextField
 import ge.fitness.core.presentation.design_system.component.MomentumTextField
 import ge.fitness.core.presentation.design_system.component.OutlinedMomentumButton
-import ge.fitness.core.presentation.design_system.icon.GmailIcon
 import ge.fitness.core.presentation.design_system.icon.GoBackIcon
 import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 import ge.fitness.core.presentation.ui.HandleEvents
@@ -272,35 +268,6 @@ fun SignUpScreen(
                         state.password == state.confirmPassword)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = stringResource(id = R.string.or_sign_up_with),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        imageVector = GmailIcon,
-                        contentDescription = stringResource(id = R.string.google_login),
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-
-            }
 
             Spacer(modifier = Modifier.weight(1f))
 
