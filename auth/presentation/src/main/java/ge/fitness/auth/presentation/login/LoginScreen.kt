@@ -1,8 +1,6 @@
 package ge.fitness.auth.presentation.login
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
@@ -28,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -42,7 +38,6 @@ import ge.fitness.core.presentation.design_system.component.MomentumCard
 import ge.fitness.core.presentation.design_system.component.MomentumPasswordTextField
 import ge.fitness.core.presentation.design_system.component.MomentumTextField
 import ge.fitness.core.presentation.design_system.component.OutlinedMomentumButton
-import ge.fitness.core.presentation.design_system.icon.GmailIcon
 import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 import ge.fitness.core.presentation.ui.HandleEvents
 import kotlinx.coroutines.launch
@@ -233,35 +228,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = stringResource(R.string.or_sign_up_with),
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 64.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface)
-                        .clickable { /* Implement Google Sign In */ },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        imageVector = GmailIcon,
-                        contentDescription = stringResource(R.string.google_login),
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,

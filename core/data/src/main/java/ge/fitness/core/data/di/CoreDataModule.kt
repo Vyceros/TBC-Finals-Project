@@ -6,7 +6,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ge.fitness.core.data.ConnectivityManagerImpl
+import ge.fitness.core.data.datastore.DataStoreHelperImpl
 import ge.fitness.core.data.util.ConnectivityManager
+import ge.fitness.core.domain.model.DataStoreHelper
 import ge.fitness.core.domain.util.NetworkHandler
 import javax.inject.Singleton
 
@@ -19,11 +21,16 @@ abstract class CoreDataModule {
     @Binds
     abstract fun bindsConnectivityManager(connectivityManagerImpl: ConnectivityManagerImpl): ConnectivityManager
 
+    @Singleton
+    @Binds
+    abstract fun bindsDataStoreHelper(dataStoreHelperImpl: DataStoreHelperImpl): DataStoreHelper
+
     companion object {
         @Provides
         @Singleton
         fun providesNetworkHandler(): NetworkHandler {
             return NetworkHandler()
         }
+
     }
 }

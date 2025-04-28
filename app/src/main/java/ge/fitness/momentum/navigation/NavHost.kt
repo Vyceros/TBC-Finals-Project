@@ -19,12 +19,18 @@ import ge.fitness.auth.presentation.navigation.authGraph
 import ge.fitness.auth.presentation.navigation.navigateToLogin
 import ge.fitness.auth.presentation.navigation.navigateToSignUp
 import ge.fitness.core.data.util.ConnectivityManager
+import ge.fitness.core.domain.model.DataStoreHelper
+import ge.fitness.core.domain.model.DataStoreKeys
 import ge.fitness.momentum.R
 import ge.fitness.momentum.ui.rememberMomentumAppState
+import ge.fitness.workout.presentation.navigation.WorkoutRoutes
+import ge.fitness.workout.presentation.navigation.navigateToHome
+import ge.fitness.workout.presentation.navigation.workoutGraph
 
 @Composable
 fun MomentumNavHost(
-    connectivityManager: ConnectivityManager
+    connectivityManager: ConnectivityManager,
+    dataStoreHelper: DataStoreHelper
 ) {
     val appState = rememberMomentumAppState(
         connectivityManager = connectivityManager
@@ -34,6 +40,12 @@ fun MomentumNavHost(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val isOffline by appState.isOffline.collectAsStateWithLifecycle()
+
+    val isLoggedIn by dataStoreHelper.getPreference(DataStoreKeys.IsLoggedIn)
+        .collectAsStateWithLifecycle(initialValue = false)
+
+    val rememberMe by dataStoreHelper.getPreference(DataStoreKeys.RememberMe)
+        .collectAsStateWithLifecycle(initialValue = false)
 
     val offlineMessage = stringResource(R.string.you_are_offline_some_features_may_not_be_available)
     LaunchedEffect(isOffline) {
@@ -51,21 +63,25 @@ fun MomentumNavHost(
         Box(modifier = Modifier.padding(padding)) {
             NavHost(
                 navController = navController,
-                startDestination = AuthRoutes.Intro
+                startDestination = if (isLoggedIn && rememberMe) {
+                    WorkoutRoutes.Home
+                } else AuthRoutes.Login
             ) {
                 authGraph(
                     onNavigateLogin = navController::navigateToLogin,
                     onNavigateRegister = navController::navigateToSignUp,
-                    onNavigateHome = {
-                        // Navigate to home screen when login is successful
-                    },
+                    onNavigateHome = navController::navigateToHome,
                     onBackClick = {
                         navController.popBackStack()
                     },
                     snakcbarHostState = snackbarHostState
                 )
-
-
+                workoutGraph(
+                    onLogout = {
+                        navController.navigateToLogin()
+                    },
+                    snakcbarHostState = snackbarHostState
+                )
             }
         }
     }

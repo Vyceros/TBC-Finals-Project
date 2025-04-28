@@ -1,6 +1,7 @@
 [versions]
 agp = "8.6.1"
 coreSplashscreen = "1.0.1"
+datastorePreferences = "1.1.4"
 kotlin = "2.1.20"
 coreKtx = "1.16.0"
 androidDesugar = "2.1.5"
@@ -10,7 +11,7 @@ mockitoCore = "5.10.0"
 mockitoInline = "5.2.0"
 protobuf = "4.29.2"
 protobufPlugin = "0.9.4"
-dataStore = "1.1.1"
+dataStore = "1.1.4"
 mockitoKotlin = "5.2.1"
 mockk = "1.13.7"
 playServicesAuth = "21.3.0"
@@ -45,6 +46,9 @@ projectCompileSdk = "35"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastorePreferences" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastorePreferences" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugar" }
 foundation-pager = { group = "androidx.compose.foundation", name = "foundation", version.ref = "pagerVersion" }
@@ -58,9 +62,6 @@ androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines"}
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinJsonSerialization" }
-protobuf-kotlin = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
-protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
-androidx-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "dataStore" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
