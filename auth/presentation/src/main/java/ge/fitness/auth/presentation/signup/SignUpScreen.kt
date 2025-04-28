@@ -1,7 +1,12 @@
 package ge.fitness.auth.presentation.signup
 
+import android.app.Activity
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +30,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,51 +59,68 @@ import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 import ge.fitness.core.presentation.ui.HandleEvents
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun SignUpScreenRoot(
     viewModel: SignUpViewModel = hiltViewModel(),
+    onNavigateLogin: () -> Unit,
     onBackClick: () -> Unit,
     snackbarHostState: SnackbarHostState,
-    onNavigateLogin: () -> Unit
+    onNavigateHome: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    HandleEvents(viewModel.events) { events ->
-        when (events) {
+    val state = viewModel.state
+
+    val registerSuccessMsg = stringResource(R.string.register_successful)
+    val defaultErrorMsg = context.getString(R.string.an_error_occurred)
+
+    var isGoogleFlow by remember { mutableStateOf(false) }
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            isGoogleFlow = true
+            viewModel.onAction(SignupAction.ProcessGoogleSignIn(result.data))
+        } else {
+            scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.google_sign_in_was_canceled))}
+        }
+    }
+
+    HandleEvents(viewModel.events) { event ->
+        when (event) {
             SignUpEvent.Success -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar(
-                        context.getString(R.string.register_successful)
-                    )
+                    snackbarHostState.showSnackbar(registerSuccessMsg)
                 }
-                onNavigateLogin()
-
+                if (isGoogleFlow) onNavigateHome()
+                else onNavigateLogin()
             }
-
             is SignUpEvent.ShowError -> {
-                val message = events.error?.let { context.getString(it) }
-                    ?: context.getString(R.string.an_error_occurred)
+                val errorMsg = event.error
+                    ?.let { context.getString(it) }
+                    ?: defaultErrorMsg
+
                 scope.launch {
-                    snackbarHostState.showSnackbar(message)
+                    snackbarHostState.showSnackbar(errorMsg)
                 }
             }
         }
     }
 
     SignUpScreen(
-        state = viewModel.state,
+        state = state,
         onAction = { action ->
             when (action) {
                 SignupAction.OnLoginClick -> onNavigateLogin()
-                else -> Unit
+                SignupAction.OnGoogleSignInClick -> googleSignInLauncher.launch(
+                    viewModel.onAction(SignupAction.GetGoogleSignInIntent) as Intent
+                )
+                else -> viewModel.onAction(action)
             }
-            viewModel.onAction(action)
         },
         onBackClick = onBackClick
     )
 }
-
 
 @Composable
 fun SignUpScreen(
@@ -290,16 +314,25 @@ fun SignUpScreen(
                     modifier = Modifier
                         .size(48.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface),
+                        .background(MaterialTheme.colorScheme.surface)
+                        .clickable { onAction(SignupAction.OnGoogleSignInClick) }
+                        .testTag("googleSignInButton"),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        imageVector = GmailIcon,
-                        contentDescription = stringResource(id = R.string.google_login),
-                        modifier = Modifier.size(24.dp)
-                    )
+                    if (state.isGoogleSignInLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    } else {
+                        Image(
+                            imageVector = GmailIcon,
+                            contentDescription = stringResource(id = R.string.google_login),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
-
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -329,7 +362,6 @@ fun SignUpScreen(
             }
         }
     }
-
 }
 
 @AppPreview

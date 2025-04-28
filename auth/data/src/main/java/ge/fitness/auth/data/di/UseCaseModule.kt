@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ge.fitness.auth.domain.auth.AuthRepository
 import ge.fitness.auth.domain.auth.LoginUseCase
+import ge.fitness.auth.domain.auth.SignInWithGoogleUseCase
 import ge.fitness.auth.domain.auth.SignUpUseCase
 import ge.fitness.auth.domain.validation.ValidateEmailUseCase
 import ge.fitness.auth.domain.validation.ValidateFullNameUseCase
@@ -52,6 +53,13 @@ object UseCaseModule {
     fun providesValidateFullNameUseCase(): ValidateFullNameUseCase {
         return ValidateFullNameUseCase()
     }
+
+    @Provides
+    @Singleton
+    fun provideSignInWithGoogleUseCase(repository: AuthRepository): SignInWithGoogleUseCase {
+        return SignInWithGoogleUseCase(repository)
+    }
+
 
 
 }

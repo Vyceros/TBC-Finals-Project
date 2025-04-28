@@ -13,10 +13,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import ge.fitness.auth.domain.auth.AuthManager
 import ge.fitness.auth.presentation.navigation.AuthRoutes
 import ge.fitness.auth.presentation.navigation.authGraph
+import ge.fitness.auth.presentation.navigation.navigateToHome
 import ge.fitness.auth.presentation.navigation.navigateToLogin
+import ge.fitness.auth.presentation.navigation.navigateToLoginAfterLogout
 import ge.fitness.auth.presentation.navigation.navigateToSignUp
 import ge.fitness.core.data.util.ConnectivityManager
 import ge.fitness.momentum.R
@@ -24,48 +28,45 @@ import ge.fitness.momentum.ui.rememberMomentumAppState
 
 @Composable
 fun MomentumNavHost(
-    connectivityManager: ConnectivityManager
+    connectivityManager: ConnectivityManager,
+    authManager: AuthManager,
+    navController: NavHostController,
+    startDestinationOverride: String? = null
 ) {
     val appState = rememberMomentumAppState(
-        connectivityManager = connectivityManager
+        connectivityManager = connectivityManager,
+        navController = navController
     )
 
-    val navController = appState.navController
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val isOffline by appState.isOffline.collectAsStateWithLifecycle()
+    val initialRoute = startDestinationOverride
+        ?: if (authManager.isUserLoggedIn()) AuthRoutes.Home.toString()
+        else AuthRoutes.Intro.toString()
 
-    val offlineMessage = stringResource(R.string.you_are_offline_some_features_may_not_be_available)
+    val msg = stringResource(R.string.you_are_offline_some_features_may_not_be_available)
+    val isOffline by appState.isOffline.collectAsStateWithLifecycle()
     LaunchedEffect(isOffline) {
         if (isOffline) {
             snackbarHostState.showSnackbar(
-                message = offlineMessage,
+                message = msg,
                 duration = SnackbarDuration.Indefinite
             )
         }
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { padding ->
-        Box(modifier = Modifier.padding(padding)) {
-            NavHost(
-                navController = navController,
-                startDestination = AuthRoutes.Intro
-            ) {
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
+        Box(Modifier.padding(padding)) {
+            NavHost(navController, startDestination = initialRoute) {
                 authGraph(
-                    onNavigateLogin = navController::navigateToLogin,
-                    onNavigateRegister = navController::navigateToSignUp,
-                    onNavigateHome = {
-                        // Navigate to home screen when login is successful
-                    },
-                    onBackClick = {
-                        navController.popBackStack()
-                    },
-                    snakcbarHostState = snackbarHostState
+                    onNavigateLogin = {navController.navigateToLogin() },
+                    onNavigateRegister = { navController.navigateToSignUp() },
+                    onNavigateHome = { navController.navigateToHome() },
+                    onNavigateLogout   = { navController.navigateToLoginAfterLogout() },
+                    onBackClick = { navController.popBackStack() },
+                    snackbarHostState = snackbarHostState,
+                    authManager = authManager
                 )
-
-
             }
         }
     }

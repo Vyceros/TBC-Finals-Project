@@ -11,4 +11,7 @@ sealed interface AuthRoutes {
 
     @Serializable
     data object Intro : AuthRoutes
+
+    @Serializable
+    data object Home : AuthRoutes
 }

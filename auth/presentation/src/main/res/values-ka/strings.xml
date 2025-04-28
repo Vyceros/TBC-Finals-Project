@@ -48,4 +48,8 @@
     <string name="start_your_journey_towards_a_more_active_lifestyle">დაიწყეთ თქვენი მოგზაურობა უფრო აქტიური ცხოვრების წესისკენ</string>
     <string name="learn_about_proper_nutrition_and_healthy_habits">შეისწავლეთ სწორი კვება და ჯანსაღი ჩვევები</string>
     <string name="join_our_community_and_track_your_progress">შემოუერთდით ჩვენს საზოგადოებას და თვალი ადევნეთ თქვენს პროგრესს</string>
+    <string name="google_sign_in_was_canceled">Google-ით შესვლა გაუქმდა</string>
+    <string name="google_sign_in_failed_please_try_again">Google-ით შესვლა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.</string>
+    <string name="signed_in_successfully">წარმატებით შეხვედით სისტემაში 🎉</string>
+    <string name="authentication_failed_please_try_again">ავთენტიფიკაცია ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.</string>
 </resources>

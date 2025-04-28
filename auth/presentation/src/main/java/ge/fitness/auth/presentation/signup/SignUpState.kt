@@ -16,4 +16,5 @@ data class SignUpState(
     val isRegisterEnabled : Boolean = false,
     val isPasswordVisible: Boolean = false,
     val isConfirmPasswordVisible: Boolean = false,
+    val isGoogleSignInLoading: Boolean = false,
 )

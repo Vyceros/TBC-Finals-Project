@@ -9,6 +9,8 @@ android {
 }
 
 dependencies {
+    // Add these to your app-level build.gradle dependencies
+    implementation ("com.google.android.gms:play-services-auth:20.7.0")
 
     implementation(libs.firebase.auth)
     implementation(platform(libs.firebase.bom))
