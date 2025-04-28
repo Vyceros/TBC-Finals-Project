@@ -1,11 +1,9 @@
 import com.android.build.api.dsl.LibraryExtension
 import ge.fitness.convention.ApplicationExtensionType
-import ge.fitness.convention.androidKotlinConfig
 import ge.fitness.convention.configureBuildTypes
-import ge.fitness.convention.kotlinConfig
+import ge.fitness.convention.configureKotlinAndroid
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.kotlin
@@ -18,8 +16,7 @@ class LibraryConventionPlugin : Plugin<Project> {
                 apply("com.android.library")
             }
             extensions.configure<LibraryExtension> {
-                kotlinConfig()
-                androidKotlinConfig(this)
+                configureKotlinAndroid(this)
                 configureBuildTypes(
                     commonExtension = this,
                     extensionType = ApplicationExtensionType.LIBRARY

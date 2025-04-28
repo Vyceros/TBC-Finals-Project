@@ -11,6 +11,7 @@ dependencies {
     compileOnly(libs.room.gradlePlugin)
 }
 
+
 gradlePlugin {
     plugins {
         register("androidApplication") {
@@ -53,7 +54,8 @@ gradlePlugin {
             implementationClass = "JvmConventionPlugin"
         }
 
-
     }
 }
+
+
 

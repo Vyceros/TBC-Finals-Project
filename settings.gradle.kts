@@ -19,6 +19,8 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+gradle.startParameter.excludedTaskNames.addAll(listOf(":build-logic:convention:testClasses"))
+
 
 rootProject.name = "Momentum"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
@@ -30,6 +32,4 @@ include(":core:data")
 include(":core:presentation:ui")
 include(":core:presentation:design-system")
 include(":core:domain")
-include(":onboarding:presentation")
-include(":onboarding:data")
-include(":onboarding:domain")
+include(":core:datastore")

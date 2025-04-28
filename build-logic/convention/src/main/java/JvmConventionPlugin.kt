@@ -1,4 +1,5 @@
-import ge.fitness.convention.kotlinConfig
+
+import ge.fitness.convention.configureKotlinJvm
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -8,7 +9,7 @@ class JvmConventionPlugin : Plugin<Project> {
             with(pluginManager) {
                 apply("org.jetbrains.kotlin.jvm")
             }
-            kotlinConfig()
+            configureKotlinJvm()
         }
     }
 }

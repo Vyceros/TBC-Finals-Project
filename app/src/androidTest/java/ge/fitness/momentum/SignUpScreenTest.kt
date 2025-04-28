@@ -1,7 +1,6 @@
 package ge.fitness.momentum
 
 import androidx.compose.ui.test.assertHasClickAction
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -26,7 +25,8 @@ class SignUpScreenTest {
         composeTestRule.setContent {
             SignUpScreen(
                 state = SignUpState(),
-                onAction = {}
+                onAction = {},
+                onBackClick = {}
             )
         }
 
@@ -63,7 +63,8 @@ class SignUpScreenTest {
         composeTestRule.setContent {
             SignUpScreen(
                 state = SignUpState(),
-                onAction = {}
+                onAction = {},
+                onBackClick = {}
             )
         }
 
@@ -86,7 +87,8 @@ class SignUpScreenTest {
                     confirmPassword = "Password123",
                     isRegisterEnabled = true
                 ),
-                onAction = {}
+                onAction = {},
+                onBackClick = {}
             )
         }
 
@@ -106,7 +108,8 @@ class SignUpScreenTest {
                     confirmPassword = "different",
                     isRegisterEnabled = false
                 ),
-                onAction = {}
+                onAction = {},
+                onBackClick = {}
             )
         }
 
@@ -120,7 +123,8 @@ class SignUpScreenTest {
         composeTestRule.setContent {
             SignUpScreen(
                 state = SignUpState(isLoading = true),
-                onAction = {}
+                onAction = {},
+                onBackClick = {}
             )
         }
 
@@ -139,7 +143,8 @@ class SignUpScreenTest {
                     if (action == SignupAction.OnLoginClick) {
                         actionTriggered = true
                     }
-                }
+                },
+                onBackClick = {}
             )
         }
 
@@ -186,7 +191,8 @@ class SignUpScreenTest {
                             registerActionCalled = true
                         }
                     }
-                }
+                },
+                onBackClick = {}
             )
         }
 
