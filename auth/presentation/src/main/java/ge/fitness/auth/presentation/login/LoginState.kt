@@ -10,5 +10,6 @@ data class LoginState(
     val isLoginEnabled: Boolean = false,
     val isLoading: Boolean = false,
     val rememberMe: Boolean = false,
-    val isPasswordVisible : Boolean = false
+    val isPasswordVisible : Boolean = false,
+    val isGoogleSignInLoading: Boolean = false,
 )

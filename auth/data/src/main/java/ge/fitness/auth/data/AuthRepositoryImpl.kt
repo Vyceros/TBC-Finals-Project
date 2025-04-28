@@ -1,8 +1,10 @@
 package ge.fitness.auth.data
 
 import com.google.firebase.auth.FirebaseAuthException
+import ge.fitness.auth.domain.auth.AuthManager
 import ge.fitness.auth.domain.auth.AuthRepository
 import ge.fitness.core.domain.auth.User
+import ge.fitness.core.domain.auth.GoogleUser
 import ge.fitness.core.domain.auth.AuthError
 import ge.fitness.core.domain.util.NetworkHandler
 import ge.fitness.core.domain.util.Resource
@@ -11,7 +13,8 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val dataSource: FirebaseAuthDataSource,
-    private val safeCall: NetworkHandler
+    private val safeCall: NetworkHandler,
+    private val authManager: AuthManager
 ) : AuthRepository {
     override suspend fun signIn(
         email: String,
@@ -23,7 +26,24 @@ class AuthRepositoryImpl @Inject constructor(
                 else AuthError.LoginError.UNKNOWN
             }
         ) {
-            dataSource.signIn(email, password)
+            val (user, _) = dataSource.signIn(email, password)
+            // No session saving here for email/password login
+            user
+        }
+    }
+
+    override suspend fun signInWithGoogle(
+        idToken: String
+    ): Flow<Resource<GoogleUser, AuthError.LoginError>> {
+        return safeCall.wrapWithResourceFlow(
+            errorMapper = { error ->
+                if (error is FirebaseAuthException) mapFirebaseLoginError(error)
+                else AuthError.LoginError.UNKNOWN
+            }
+        ) {
+            val (user, token) = dataSource.signInWithGoogle(idToken)
+            // Create GoogleUser to wrap the user with token
+            GoogleUser(user, token)
         }
     }
 
@@ -38,11 +58,11 @@ class AuthRepositoryImpl @Inject constructor(
                 else AuthError.RegisterError.UNKNOWN
             }
         ) {
-            dataSource.signUp(email, password, fullName)
+            val (user, _) = dataSource.signUp(email, password, fullName)
+            // No session saving here for registration
+            user
         }
     }
-
-
 }
 
 private fun mapFirebaseLoginError(e: Throwable): AuthError.LoginError {

@@ -6,9 +6,13 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import ge.fitness.auth.data.AuthManagerImpl
 import ge.fitness.auth.data.AuthRepositoryImpl
 import ge.fitness.auth.data.FirebaseAuthDataSource
+import ge.fitness.auth.data.GoogleSignInManagerImpl
+import ge.fitness.auth.domain.auth.AuthManager
 import ge.fitness.auth.domain.auth.AuthRepository
+import ge.fitness.auth.domain.auth.GoogleSignInManager
 import javax.inject.Singleton
 
 @Module
@@ -33,4 +37,16 @@ abstract class AppModule {
             return FirebaseAuthDataSource(auth)
         }
     }
+
+    @Binds
+    @Singleton
+    abstract fun bindGoogleSignInManager(
+        impl: GoogleSignInManagerImpl
+    ): GoogleSignInManager
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthManager(
+        authManagerImpl: AuthManagerImpl
+    ): AuthManager
 }

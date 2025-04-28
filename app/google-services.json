@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "178552592186-9ftflhbu51ffkjhalet1k5640h55fekf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ge.fitness.momentum",
+            "certificate_hash": "420fd8ffcc2a8a6964a2e2e98fbfa92b9e5f9918"
+          }
+        },
+        {
           "client_id": "178552592186-bdruh3nmeoulprtkb4imb7q52k968a98.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -12,6 +12,7 @@ dependencies {
 
     implementation(libs.foundation.pager)
     implementation(libs.play.services.auth)
+    implementation(libs.firebase.auth.ktx)
 
     //Tests
     testImplementation(libs.junit)

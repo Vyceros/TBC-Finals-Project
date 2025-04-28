@@ -1,5 +1,9 @@
 package ge.fitness.auth.presentation.login
 
+import android.app.Activity
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -51,35 +55,53 @@ import kotlinx.coroutines.launch
 fun LoginScreenRoot(
     viewModel: LoginViewModel = hiltViewModel(),
     onNavigateHome: () -> Unit,
-    snackbarHostState: SnackbarHostState,
-    onNavigateRegister: () -> Unit
+    onNavigateRegister: () -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
+    val state = viewModel.state
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    HandleEvents(viewModel.events) { events ->
-        when (events) {
-            LoginEvent.LoginSuccess -> {
 
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        when (result.resultCode) {
+            Activity.RESULT_OK ->
+                viewModel.onAction(LoginAction.ProcessGoogleSignIn(result.data))
+            Activity.RESULT_CANCELED -> scope.launch {
+                snackbarHostState.showSnackbar(context.getString(R.string.google_sign_in_was_canceled))
+            }
+            else -> scope.launch {
+                snackbarHostState.showSnackbar(context.getString(R.string.google_sign_in_failed_please_try_again))
+            }
+        }
+    }
+
+    HandleEvents(viewModel.events) { event ->
+        when (event) {
+            LoginEvent.LoginSuccess -> {
+                scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.signed_in_successfully)) }
                 onNavigateHome()
             }
-
             is LoginEvent.ShowError -> {
-                val message = events.message?.let { context.getString(it) } ?: "An error occurred"
-                scope.launch {
-                    snackbarHostState.showSnackbar(message)
-                }
+                val msg = event.message
+                    ?.let { context.getString(it) }
+                    ?: context.getString(R.string.authentication_failed_please_try_again)
+                scope.launch { snackbarHostState.showSnackbar(msg) }
             }
         }
     }
 
     LoginScreen(
-        state = viewModel.state,
+        state = state,
         onAction = { action ->
             when (action) {
                 LoginAction.OnRegisterClick -> onNavigateRegister()
-                else -> Unit
+                LoginAction.OnGoogleSignInClick -> googleSignInLauncher.launch(
+                    viewModel.onAction(LoginAction.GetGoogleSignInIntent) as Intent
+                )
+                else -> viewModel.onAction(action)
             }
-            viewModel.onAction(action)
         }
     )
 }
@@ -249,16 +271,25 @@ fun LoginScreen(
                         .size(48.dp)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.surface)
-                        .clickable { /* Implement Google Sign In */ },
+                        .clickable { onAction(LoginAction.OnGoogleSignInClick) }
+                        .testTag("googleSignInButton"),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        imageVector = GmailIcon,
-                        contentDescription = stringResource(R.string.google_login),
-                        modifier = Modifier.size(24.dp)
-                    )
+                    if (state.isGoogleSignInLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .testTag("googleSignInProgressIndicator"),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Image(
+                            imageVector = GmailIcon,
+                            contentDescription = stringResource(R.string.google_login),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
-
             }
 
             Spacer(modifier = Modifier.height(24.dp))
