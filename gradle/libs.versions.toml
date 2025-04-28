@@ -8,6 +8,9 @@ kotlinxCoroutinesTest = "1.10.1"
 ksp = "2.1.20-1.0.31"
 mockitoCore = "5.10.0"
 mockitoInline = "5.2.0"
+protobuf = "4.29.2"
+protobufPlugin = "0.9.4"
+dataStore = "1.1.1"
 mockitoKotlin = "5.2.1"
 mockk = "1.13.7"
 playServicesAuth = "21.3.0"
@@ -55,6 +58,9 @@ androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines"}
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinJsonSerialization" }
+protobuf-kotlin = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
+protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
+androidx-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "dataStore" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
@@ -104,6 +110,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 
 #Convention plugins we made in our project
 momentum-application-android = { id = "momentum.android.application", version = "unspecified" }
