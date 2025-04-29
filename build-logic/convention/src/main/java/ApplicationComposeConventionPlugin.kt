@@ -1,3 +1,4 @@
+
 import com.android.build.api.dsl.ApplicationExtension
 import ge.fitness.convention.configureCompose
 import org.gradle.api.Plugin
@@ -11,6 +12,7 @@ class ApplicationComposeConventionPlugin : Plugin<Project> {
                 apply("momentum.android.application")
                 apply("org.jetbrains.kotlin.plugin.compose")
             }
+
             val extension = extensions.getByType<ApplicationExtension>()
             configureCompose(extension)
         }

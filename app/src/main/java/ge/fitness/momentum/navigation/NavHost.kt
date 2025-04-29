@@ -19,8 +19,8 @@ import ge.fitness.auth.presentation.navigation.authGraph
 import ge.fitness.auth.presentation.navigation.navigateToLogin
 import ge.fitness.auth.presentation.navigation.navigateToSignUp
 import ge.fitness.core.data.util.ConnectivityManager
-import ge.fitness.core.domain.model.DataStoreHelper
-import ge.fitness.core.domain.model.DataStoreKeys
+import ge.fitness.core.domain.datastore.DataStoreHelper
+import ge.fitness.core.domain.datastore.DataStoreKeys
 import ge.fitness.momentum.R
 import ge.fitness.momentum.ui.rememberMomentumAppState
 import ge.fitness.workout.presentation.navigation.WorkoutRoutes

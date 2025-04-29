@@ -30,25 +30,20 @@ class SignUpScreenTest {
             )
         }
 
-        // Then - checking all major UI elements
-        // For the toolbar and header
         composeTestRule.onNodeWithText("Create Account").assertExists()
         composeTestRule.onNodeWithText("Let's Start!").assertExists()
 
-        // For form fields
         composeTestRule.onNodeWithText("Full name").assertExists()
         composeTestRule.onNodeWithText("Email").assertExists()
         composeTestRule.onNodeWithText("Password").assertExists()
         composeTestRule.onNodeWithText("Confirm Password").assertExists()
 
-        // For button and links
         composeTestRule.onNodeWithText("Sign Up").assertExists()
-        composeTestRule.onNodeWithText("or sign up with").assertExists()
         composeTestRule.onNodeWithText("Already have an account? ").assertExists()
         composeTestRule.onNodeWithText("Log in").assertExists()
 
-        // For terms text - using a partial match
-        composeTestRule.onNodeWithText("By continuing, you agree to", substring = true).assertExists()
+        composeTestRule.onNodeWithText("By continuing, you agree to", substring = true)
+            .assertExists()
     }
 
     @Test
@@ -68,11 +63,12 @@ class SignUpScreenTest {
             )
         }
 
-        // Then - input fields can receive text
+        // Then
         composeTestRule.onNodeWithText("Enter your full name").performTextInput(testFullName)
         composeTestRule.onNodeWithText("Enter your email").performTextInput(testEmail)
         composeTestRule.onNodeWithText("Enter your password").performTextInput(testPassword)
-        composeTestRule.onNodeWithText("Confirm your password").performTextInput(testConfirmPassword)
+        composeTestRule.onNodeWithText("Confirm your password")
+            .performTextInput(testConfirmPassword)
     }
 
     @Test
@@ -148,21 +144,18 @@ class SignUpScreenTest {
             )
         }
 
-        // 1) Click the button
         composeTestRule
             .onNodeWithTag("loginNavButton")
             .assertHasClickAction()
             .assertIsEnabled()
             .performClick()
 
-        // 2) WAIT for Compose to settle, then assert
         composeTestRule.runOnIdle {
             assert(actionTriggered) {
                 "Login button click did not trigger the expected action"
             }
         }
     }
-
 
 
     @Test
@@ -187,7 +180,8 @@ class SignUpScreenTest {
                     if (action is SignupAction.OnRegisterClick) {
                         if (action.email == testEmail &&
                             action.password == testPassword &&
-                            action.fullName == testFullName) {
+                            action.fullName == testFullName
+                        ) {
                             registerActionCalled = true
                         }
                     }

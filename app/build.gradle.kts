@@ -22,7 +22,8 @@ android {
 dependencies {
 
     implementation(libs.androidx.navigation.compose)
-
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -43,6 +44,8 @@ dependencies {
     implementation(projects.core.domain)
 
     implementation(projects.workout.presentation)
+    implementation(projects.workout.data)
+    implementation(projects.workout.domain)
 
     implementation(projects.auth.domain)
     implementation(projects.auth.data)

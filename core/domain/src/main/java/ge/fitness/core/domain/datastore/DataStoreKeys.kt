@@ -1,4 +1,6 @@
-package ge.fitness.core.domain.model
+package ge.fitness.core.domain.datastore
+
+import ge.fitness.core.domain.model.PreferenceKey
 
 object DataStoreKeys {
 

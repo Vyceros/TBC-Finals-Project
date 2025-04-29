@@ -85,20 +85,19 @@ fun LoginScreen(
     state: LoginState,
     onAction: (LoginAction) -> Unit,
 ) {
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(state = rememberScrollState()),
+                .verticalScroll(state = rememberScrollState())
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = stringResource(R.string.log_in),
@@ -106,13 +105,13 @@ fun LoginScreen(
                 style = MaterialTheme.typography.titleLarge
             )
 
-            Spacer(modifier = Modifier.weight(0.5f))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = stringResource(R.string.welcome),
                 color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
+                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
             )
 
             Text(
@@ -123,13 +122,13 @@ fun LoginScreen(
                 modifier = Modifier.padding(horizontal = 32.dp, vertical = 8.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             MomentumCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .widthIn(max = 500.dp)
-                    .padding(vertical = 16.dp),
+                    .padding(vertical = 8.dp),
             ) {
                 Column(
                     modifier = Modifier
@@ -182,20 +181,11 @@ fun LoginScreen(
                             color = MaterialTheme.colorScheme.onBackground
                         )
 
-                        Spacer(modifier = Modifier.weight(1f))
-
-                        TextButton(onClick = { /* Implement forgot password */ }) {
-                            Text(
-                                text = stringResource(R.string.forgot_password),
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             OutlinedMomentumButton(
                 onClick = {
@@ -228,13 +218,13 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = stringResource(R.string.don_t_have_an_account),
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 TextButton(onClick = { onAction(LoginAction.OnRegisterClick) }) {
@@ -243,9 +233,12 @@ fun LoginScreen(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
+
 
 @AppPreview
 @Composable

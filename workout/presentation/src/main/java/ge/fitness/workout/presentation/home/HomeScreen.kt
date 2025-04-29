@@ -1,69 +1,188 @@
 package ge.fitness.workout.presentation.home
 
-
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import ge.fitness.core.presentation.design_system.component.AppPreview
+import ge.fitness.core.presentation.design_system.theme.MomentumTheme
+import ge.fitness.workout.presentation.R
+import ge.fitness.workout.presentation.model.ExerciseUiModel
+
+
+@Composable
+fun HomeScreenRoot(
+    viewModel: HomeViewModel = hiltViewModel(),
+    onExerciseClick: (ExerciseUiModel) -> Unit
+) {
+    val state = viewModel.state
+
+    HomeScreen(
+        recommendations = state.exercises,
+        topWorkout = state.exercises.firstOrNull() ?: ExerciseUiModel("", ""),
+        onExerciseClick = onExerciseClick,
+        state = viewModel.state
+    )
+}
 
 @Composable
 fun HomeScreen(
-    onLogout: () -> Unit = {}
+    recommendations: List<ExerciseUiModel>,
+    topWorkout: ExerciseUiModel,
+    onExerciseClick: (ExerciseUiModel) -> Unit,
+    state : HomeState
 ) {
-    Box(
+    val scrollState = rememberScrollState()
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(scrollState)
+            .padding(bottom = 16.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+        SectionTitle(
+            title = stringResource(R.string.check_out_the_catalog),
+            modifier = Modifier.padding(start = 16.dp, top = 24.dp, bottom = 16.dp)
+        )
+
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "Welcome to Momentum Fitness!",
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center
-            )
+            items(recommendations) { exercise ->
+                ExerciseRecommendationCard(
+                    exercise = exercise,
+                    onClick = { onExerciseClick(exercise) }
+                )
+            }
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        SectionTitle(
+            title = stringResource(R.string.top_workout),
+            modifier = Modifier.padding(start = 16.dp, top = 32.dp, bottom = 16.dp)
+        )
+    }
+}
 
-            Text(
-                text = "Your fitness journey starts here",
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
-            )
+@Composable
+fun SectionTitle(title: String, modifier: Modifier = Modifier) {
+    Text(
+        text = title,
+        fontSize = 28.sp,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.tertiary,
+        modifier = modifier
+    )
+}
 
-            Spacer(modifier = Modifier.weight(1f))
 
-            Button(
-                onClick = onLogout,
-                modifier = Modifier.fillMaxWidth(0.8f)
-            ) {
-                Text("Logout")
+
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun ExerciseRecommendationCard(
+    exercise: ExerciseUiModel,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    isLoading : Boolean = false
+) {
+    val colorScheme = MaterialTheme.colorScheme
+
+    Card(
+        modifier = modifier
+            .width(160.dp)
+            .height(160.dp)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (isLoading){
+                CircularProgressIndicator(
+                    modifier = Modifier.size(36.dp)
+                )
+            }else{
+                GlideImage(
+                    model = exercise.image,
+                    contentDescription = exercise.name,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(24.dp)),
+                )
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                ) {
+                    Text(
+                        text = exercise.name,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 2,
+                        color = colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
-@Preview(showBackground = true, apiLevel = 34)
+
+@AppPreview
 @Composable
-fun HomeScreenPreview() {
-    HomeScreen()
+fun ExerciseCardPreview() {
+
+    MomentumTheme{
+        Surface(
+            modifier = Modifier.padding(16.dp),
+        ) {
+            ExerciseRecommendationCard(
+                exercise = ExerciseUiModel(
+                    name = "",
+                    image = ge.fitness.core.presentation.design_system.R.drawable.ic_time.toString()
+
+                ),
+                onClick = {
+
+                }
+            )
+        }
+    }
 }

@@ -4,12 +4,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import ge.fitness.workout.presentation.home.HomeScreen
+import ge.fitness.workout.presentation.home.HomeScreenRoot
 
 
-fun NavController.navigateToHome(){
-    navigate(WorkoutRoutes.Home){
-        popUpTo(0){
+fun NavController.navigateToHome() {
+    navigate(WorkoutRoutes.Home) {
+        popUpTo(0) {
             inclusive = true
         }
         launchSingleTop = true
@@ -23,6 +23,6 @@ fun NavGraphBuilder.workoutGraph(
 ) {
 
     composable<WorkoutRoutes.Home> {
-        HomeScreen(onLogout)
+        HomeScreenRoot {  }
     }
 }
