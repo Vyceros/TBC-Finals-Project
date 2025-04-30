@@ -154,17 +154,13 @@ cd momentum
 
 ## 🧑‍💻 Author
 
-**Devon Raynor**  
-_Mobile Developer | Clean Code Enthusiast_  
-
-_You can contact the developer via GitHub or LinkedIn for inquiries._
-
----
+Vyceros,
+Gublera
 
 ## 📝 License
 
-This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
+License license license
 
 ---
 
-> *Momentum is built with modularity and developer happiness in mind. Fork it, improve it, or contribute to make it even better!* 💥
+ *Momentum is built with modularity and developer happiness in mind. Fork it, improve it, or contribute to make it even better!* 💥
