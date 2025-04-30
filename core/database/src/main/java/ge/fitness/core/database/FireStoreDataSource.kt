@@ -3,6 +3,7 @@ package ge.fitness.core.database
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
+import ge.fitness.core.database.entity.ArticleEntity
 import ge.fitness.core.database.entity.ExerciseEntity
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -14,6 +15,7 @@ class FireStoreDataSource @Inject constructor(
     private val fireStore: FirebaseFirestore,
 ) {
     private val collection: CollectionReference = fireStore.collection("exercises")
+    private val articles: CollectionReference = fireStore.collection("articles")
 
     suspend fun saveExercise(exercise: ExerciseEntity) {
         collection.document(exercise.id).set(exercise).await()
@@ -137,5 +139,33 @@ class FireStoreDataSource @Inject constructor(
             batch.delete(document.reference)
         }
         batch.commit().await()
+    }
+
+    suspend fun saveArticles(articles: List<ArticleEntity>) {
+        val batch = fireStore.batch()
+
+        articles.forEach { article ->
+            val docRef = collection.document(article.url)
+            batch.set(docRef, articles)
+        }
+        batch.commit().await()
+    }
+
+    fun getAllArticles(): Flow<List<ArticleEntity>> = callbackFlow {
+        val listener = articles.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null) {
+                val articles = snapshot.documents.mapNotNull { it.toObject<ArticleEntity>() }
+                trySend(articles)
+            } else {
+                trySend(emptyList())
+            }
+        }
+
+        awaitClose { listener.remove() }
     }
 }

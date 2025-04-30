@@ -2,4 +2,5 @@
 <resources>
     <string name="top_workout">Top Workout</string>
     <string name="check_out_the_catalog">Check out the catalog</string>
+    <string name="no_description_available">No description available</string>
 </resources>

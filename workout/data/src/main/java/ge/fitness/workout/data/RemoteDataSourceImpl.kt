@@ -1,5 +1,4 @@
 package ge.fitness.workout.data
-
 import ge.fitness.core.domain.workout.Exercise
 import ge.fitness.workout.data.api.ExerciseApi
 import ge.fitness.workout.data.model.toExercise
@@ -12,6 +11,5 @@ class RemoteDataSourceImpl @Inject constructor(
     override suspend fun getExercises(): List<Exercise> {
         val exercises = api.getExercises().map { it.toExercise() }
         return exercises
-
     }
 }

@@ -58,7 +58,7 @@ private fun BuildType.setUpReleaseType(
 ) {
     buildConfigField("String", "API_KEY", "\"$apiKey\"")
     buildConfigField("String", "BACKUP_KEY", "\"$backupKey\"")
-    buildConfigField("String", "BASE_URL", "\"https://wger.de/api/v2/\"")
+    buildConfigField("String", "BASE_URL", "\"https://run.mocky.io/v3/\"")
     buildConfigField("String", "EXERCISE_URL", "\"https://exercisedb.p.rapidapi.com/\"")
     isMinifyEnabled = true
     proguardFiles(
@@ -73,7 +73,7 @@ private fun BuildType.setUpDebugType(
 ) {
     buildConfigField("String", "API_KEY", "\"$apiKey\"")
     buildConfigField("String", "BACKUP_KEY", "\"$backupKey\"")
-    buildConfigField("String", "BASE_URL", "\"https://wger.de/api/v2/\"")
+    buildConfigField("String", "BASE_URL", "\"https://run.mocky.io/v3/\"")
     buildConfigField("String", "EXERCISE_URL", "\"https://exercisedb.p.rapidapi.com/\"")
 }
 

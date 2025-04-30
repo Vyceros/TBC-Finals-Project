@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +42,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import ge.fitness.core.presentation.design_system.component.AppPreview
 import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 import ge.fitness.workout.presentation.R
+import ge.fitness.workout.presentation.model.ArticleUiModel
 import ge.fitness.workout.presentation.model.ExerciseUiModel
 
 
@@ -50,8 +55,8 @@ fun HomeScreenRoot(
 
     HomeScreen(
         recommendations = state.exercises,
-        topWorkout = state.exercises.firstOrNull() ?: ExerciseUiModel("", ""),
         onExerciseClick = onExerciseClick,
+        onArticleClick = {},
         state = viewModel.state
     )
 }
@@ -59,9 +64,9 @@ fun HomeScreenRoot(
 @Composable
 fun HomeScreen(
     recommendations: List<ExerciseUiModel>,
-    topWorkout: ExerciseUiModel,
     onExerciseClick: (ExerciseUiModel) -> Unit,
-    state : HomeState
+    onArticleClick : (ArticleUiModel) -> Unit,
+    state: HomeState
 ) {
     val scrollState = rememberScrollState()
 
@@ -81,7 +86,7 @@ fun HomeScreen(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(recommendations) { exercise ->
+            items(state.exercises) { exercise ->
                 ExerciseRecommendationCard(
                     exercise = exercise,
                     onClick = { onExerciseClick(exercise) }
@@ -93,6 +98,25 @@ fun HomeScreen(
             title = stringResource(R.string.top_workout),
             modifier = Modifier.padding(start = 16.dp, top = 32.dp, bottom = 16.dp)
         )
+        state.topWorkout?.let {
+            WeeklyChallengeCard(
+                exercise = it,
+                onClick = {}
+            )
+        }
+
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(state.articles) { article ->
+                ArticleCard(
+                    article = article,
+                    onClick = { onArticleClick(article) }
+                )
+            }
+        }
+
     }
 }
 
@@ -108,15 +132,13 @@ fun SectionTitle(title: String, modifier: Modifier = Modifier) {
 }
 
 
-
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ExerciseRecommendationCard(
     exercise: ExerciseUiModel,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isLoading : Boolean = false
+    isLoading: Boolean = false
 ) {
     val colorScheme = MaterialTheme.colorScheme
 
@@ -129,11 +151,11 @@ fun ExerciseRecommendationCard(
         colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            if (isLoading){
+            if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(36.dp)
                 )
-            }else{
+            } else {
                 GlideImage(
                     model = exercise.image,
                     contentDescription = exercise.name,
@@ -164,12 +186,126 @@ fun ExerciseRecommendationCard(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun ArticleCard(
+    article: ArticleUiModel,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    isLoading: Boolean = false
+) {
+    val colorScheme = MaterialTheme.colorScheme
+
+    Card(
+        modifier = modifier
+            .width(160.dp)
+            .height(160.dp)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(36.dp)
+                )
+            } else {
+                GlideImage(
+                    model = article.urlToImage,
+                    contentDescription = article.title,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(24.dp)),
+                )
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                ) {
+                    Text(
+                        text = article.description
+                            ?: stringResource(R.string.no_description_available),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 2,
+                        color = colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                }
+            }
+
+        }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun WeeklyChallengeCard(
+    exercise: ExerciseUiModel,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(140.dp)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .padding(16.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Column {
+                    Text(
+                        text = "We\nRecommend",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.secondary,
+                        lineHeight = 34.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = exercise.name,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .background(Color.White)
+            ) {
+                GlideImage(
+                    model = exercise.image,
+                    contentDescription = exercise.name,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
+    }
+}
 
 @AppPreview
 @Composable
 fun ExerciseCardPreview() {
 
-    MomentumTheme{
+    MomentumTheme {
         Surface(
             modifier = Modifier.padding(16.dp),
         ) {
