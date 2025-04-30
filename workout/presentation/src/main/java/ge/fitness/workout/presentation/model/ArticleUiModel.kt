@@ -5,3 +5,7 @@ data class ArticleUiModel(
     val description: String?,
     val urlToImage: String?,
     )
+
+data class ArticleListUiModel(
+    val articles: List<ArticleUiModel>,
+)

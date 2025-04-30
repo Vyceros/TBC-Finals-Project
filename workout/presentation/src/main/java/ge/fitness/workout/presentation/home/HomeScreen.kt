@@ -42,6 +42,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import ge.fitness.core.presentation.design_system.component.AppPreview
 import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 import ge.fitness.workout.presentation.R
+import ge.fitness.workout.presentation.model.ArticleListUiModel
 import ge.fitness.workout.presentation.model.ArticleUiModel
 import ge.fitness.workout.presentation.model.ExerciseUiModel
 
@@ -65,7 +66,7 @@ fun HomeScreenRoot(
 fun HomeScreen(
     recommendations: List<ExerciseUiModel>,
     onExerciseClick: (ExerciseUiModel) -> Unit,
-    onArticleClick : (ArticleUiModel) -> Unit,
+    onArticleClick : (List<ArticleListUiModel>) -> Unit,
     state: HomeState
 ) {
     val scrollState = rememberScrollState()
@@ -103,18 +104,6 @@ fun HomeScreen(
                 exercise = it,
                 onClick = {}
             )
-        }
-
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(state.articles) { article ->
-                ArticleCard(
-                    article = article,
-                    onClick = { onArticleClick(article) }
-                )
-            }
         }
 
     }
@@ -186,60 +175,6 @@ fun ExerciseRecommendationCard(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun ArticleCard(
-    article: ArticleUiModel,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    isLoading: Boolean = false
-) {
-    val colorScheme = MaterialTheme.colorScheme
-
-    Card(
-        modifier = modifier
-            .width(160.dp)
-            .height(160.dp)
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(36.dp)
-                )
-            } else {
-                GlideImage(
-                    model = article.urlToImage,
-                    contentDescription = article.title,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(24.dp)),
-                )
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                ) {
-                    Text(
-                        text = article.description
-                            ?: stringResource(R.string.no_description_available),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 2,
-                        color = colorScheme.primary,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-
-                }
-            }
-
-        }
-    }
-}
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
