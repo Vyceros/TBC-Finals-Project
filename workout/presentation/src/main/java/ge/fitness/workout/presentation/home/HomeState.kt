@@ -6,4 +6,5 @@ data class HomeState(
     val exercises : List<ExerciseUiModel> = emptyList(),
     val topWorkout : ExerciseUiModel? = null,
     val isLoading : Boolean = false,
+    var selectedExercise : ExerciseUiModel? = null
 )

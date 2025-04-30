@@ -42,31 +42,25 @@ import com.bumptech.glide.integration.compose.GlideImage
 import ge.fitness.core.presentation.design_system.component.AppPreview
 import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 import ge.fitness.workout.presentation.R
-import ge.fitness.workout.presentation.model.ArticleListUiModel
-import ge.fitness.workout.presentation.model.ArticleUiModel
 import ge.fitness.workout.presentation.model.ExerciseUiModel
 
 
 @Composable
 fun HomeScreenRoot(
     viewModel: HomeViewModel = hiltViewModel(),
-    onExerciseClick: (ExerciseUiModel) -> Unit
 ) {
     val state = viewModel.state
 
     HomeScreen(
-        recommendations = state.exercises,
-        onExerciseClick = onExerciseClick,
-        onArticleClick = {},
-        state = viewModel.state
+
+        state = viewModel.state,
+        onAction = {}
     )
 }
 
 @Composable
 fun HomeScreen(
-    recommendations: List<ExerciseUiModel>,
-    onExerciseClick: (ExerciseUiModel) -> Unit,
-    onArticleClick : (List<ArticleListUiModel>) -> Unit,
+    onAction: (HomeAction) -> Unit,
     state: HomeState
 ) {
     val scrollState = rememberScrollState()
@@ -90,7 +84,8 @@ fun HomeScreen(
             items(state.exercises) { exercise ->
                 ExerciseRecommendationCard(
                     exercise = exercise,
-                    onClick = { onExerciseClick(exercise) }
+                    onLongClick = {
+                    }
                 )
             }
         }
@@ -105,9 +100,74 @@ fun HomeScreen(
                 onClick = {}
             )
         }
-
     }
 }
+
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun ExerciseRecommendationCard(
+    exercise: ExerciseUiModel,
+    onLongClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    isLoading: Boolean = false
+) {
+    val colorScheme = MaterialTheme.colorScheme
+
+    Card(
+        modifier = modifier
+            .width(180.dp)
+            .height(220.dp)
+            .clickable(onClick = onLongClick),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .height(140.dp)
+                    .fillMaxWidth()
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .align(Alignment.Center)
+                    )
+                } else {
+                    GlideImage(
+                        model = exercise.image,
+                        contentDescription = exercise.name,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                    )
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .padding(12.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = exercise.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colorScheme.primary
+                )
+                Text(
+                    text = "Full body movement",
+                    fontSize = 12.sp,
+                    color = colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
 
 @Composable
 fun SectionTitle(title: String, modifier: Modifier = Modifier) {
@@ -119,62 +179,6 @@ fun SectionTitle(title: String, modifier: Modifier = Modifier) {
         modifier = modifier
     )
 }
-
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun ExerciseRecommendationCard(
-    exercise: ExerciseUiModel,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    isLoading: Boolean = false
-) {
-    val colorScheme = MaterialTheme.colorScheme
-
-    Card(
-        modifier = modifier
-            .width(160.dp)
-            .height(160.dp)
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(36.dp)
-                )
-            } else {
-                GlideImage(
-                    model = exercise.image,
-                    contentDescription = exercise.name,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(24.dp)),
-                )
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                ) {
-                    Text(
-                        text = exercise.name,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 2,
-                        color = colorScheme.primary,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-
-                }
-            }
-
-        }
-    }
-}
-
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -247,12 +251,10 @@ fun ExerciseCardPreview() {
             ExerciseRecommendationCard(
                 exercise = ExerciseUiModel(
                     name = "",
-                    image = ge.fitness.core.presentation.design_system.R.drawable.ic_time.toString()
-
+                    image = ge.fitness.core.presentation.design_system.R.drawable.ic_time.toString(),
+                    description = emptyList()
                 ),
-                onClick = {
-
-                }
+                onLongClick = {}
             )
         }
     }

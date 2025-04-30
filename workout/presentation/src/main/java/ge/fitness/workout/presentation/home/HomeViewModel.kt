@@ -26,6 +26,12 @@ class HomeViewModel @Inject constructor(
     var state by mutableStateOf(HomeState())
         private set
 
+    fun onAction(action : HomeAction){
+        when(action){
+            is HomeAction.OnWorkoutClick -> {
+            }
+        }
+    }
 
     init {
         fetchAndSyncExercises()
@@ -63,7 +69,8 @@ class HomeViewModel @Inject constructor(
 fun Exercise.toUiModel(): ExerciseUiModel {
     return ExerciseUiModel(
         name = name,
-        image = gifUrl
+        image = gifUrl,
+        description = instructions
     )
 }
 
