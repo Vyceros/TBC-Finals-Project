@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="top_workout">პოპულარული ვარჯიში</string>
+    <string name="check_out_the_catalog">იხილე ჩამონათვალი</string>
+    <string name="no_description_available">მიუწვდომელია</string>
+    <string name="news_and_articles">ახალი ამბები</string>
+    <string name="select_language">აირჩიე ენა</string>
+    <string name="logout">გასვლა</string>
+    <string name="thank_you_for_using_our_app_more_features_will_come">Thank you for using our app. More features will come!</string>
+</resources>

@@ -8,8 +8,6 @@ sealed interface ApplicationError : Error {
 
     enum class NetworkError : ApplicationError{
         NO_INTERNET,
-        TOO_MANY_REQUESTS,
-        SERIALIZATION_ERROR,
         REQUEST_TIMEOUT,
         UNKNOWN
     }

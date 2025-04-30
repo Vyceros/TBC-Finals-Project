@@ -4,6 +4,7 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.BuildType
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 
@@ -16,15 +17,18 @@ internal fun Project.configureBuildTypes(
         buildFeatures {
             buildConfig = true
         }
+        val apiKey = gradleLocalProperties(rootDir, rootProject.providers).getProperty("API_KEY")
+        val backupKey =
+            gradleLocalProperties(rootDir, rootProject.providers).getProperty("BACKUP_KEY")
         when (extensionType) {
             ApplicationExtensionType.ANDROID -> {
                 extensions.configure<ApplicationExtension> {
                     buildTypes {
                         release {
-                            setUpReleaseType(commonExtension)
+                            setUpReleaseType(commonExtension, apiKey, backupKey)
                         }
                         debug {
-                            setUpDebugType()
+                            setUpDebugType(apiKey, backupKey)
                         }
                     }
                 }
@@ -34,10 +38,10 @@ internal fun Project.configureBuildTypes(
                 extensions.configure<LibraryExtension> {
                     buildTypes {
                         release {
-                            setUpReleaseType(commonExtension)
+                            setUpReleaseType(commonExtension, apiKey, backupKey)
                         }
                         debug {
-                            setUpDebugType()
+                            setUpDebugType(apiKey, backupKey)
                         }
                     }
                 }
@@ -48,9 +52,14 @@ internal fun Project.configureBuildTypes(
 
 
 private fun BuildType.setUpReleaseType(
-    commonExtension: CommonExtension<*, *, *, *, *, *>
+    commonExtension: CommonExtension<*, *, *, *, *, *>,
+    apiKey: String,
+    backupKey: String,
 ) {
-    buildConfigField("String", "BASE_URL", "\"run.mocky.io\"")
+    buildConfigField("String", "API_KEY", "\"$apiKey\"")
+    buildConfigField("String", "BACKUP_KEY", "\"$backupKey\"")
+    buildConfigField("String", "BASE_URL", "\"https://run.mocky.io/v3/\"")
+    buildConfigField("String", "EXERCISE_URL", "\"https://exercisedb.p.rapidapi.com/\"")
     isMinifyEnabled = true
     proguardFiles(
         commonExtension.getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -58,8 +67,14 @@ private fun BuildType.setUpReleaseType(
     )
 }
 
-private fun BuildType.setUpDebugType() {
-    buildConfigField("String", "BASE_URL", "\"run.mocky.io\"")
+private fun BuildType.setUpDebugType(
+    apiKey: String,
+    backupKey: String
+) {
+    buildConfigField("String", "API_KEY", "\"$apiKey\"")
+    buildConfigField("String", "BACKUP_KEY", "\"$backupKey\"")
+    buildConfigField("String", "BASE_URL", "\"https://run.mocky.io/v3/\"")
+    buildConfigField("String", "EXERCISE_URL", "\"https://exercisedb.p.rapidapi.com/\"")
 }
 
 

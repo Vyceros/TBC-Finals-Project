@@ -11,8 +11,8 @@ import ge.fitness.auth.domain.validation.ValidateEmailUseCase
 import ge.fitness.auth.domain.validation.ValidatePasswordUseCase
 import ge.fitness.auth.domain.validation.ValidationResult
 import ge.fitness.auth.presentation.utils.toStringRes
-import ge.fitness.core.domain.model.DataStoreHelper
-import ge.fitness.core.domain.model.DataStoreKeys
+import ge.fitness.core.domain.datastore.DataStoreHelper
+import ge.fitness.core.domain.datastore.DataStoreKeys
 import ge.fitness.core.domain.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel

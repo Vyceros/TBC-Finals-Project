@@ -1,6 +1,5 @@
 package ge.fitness.core.presentation.design_system.icon
 
-import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -14,9 +13,6 @@ val VisibilityOff: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.ic_visibility_off)
 
-val GmailIcon: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.ic_gmail)
 
 val GoBackIcon: ImageVector
     @Composable

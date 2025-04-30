@@ -21,7 +21,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import ge.fitness.core.data.util.ConnectivityManager
-import ge.fitness.core.domain.model.DataStoreHelper
+import ge.fitness.core.domain.datastore.DataStoreHelper
 import ge.fitness.core.presentation.design_system.theme.MomentumTheme
 import ge.fitness.momentum.navigation.MomentumNavHost
 import ge.fitness.momentum.presentation.ui.util.AppPreview

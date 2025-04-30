@@ -2,4 +2,5 @@
 <resources>
     <string name="get_started">Get Started</string>
     <string name="next">Next</string>
+    <string name="recommendations">Recommendations</string>
 </resources>

@@ -35,41 +35,6 @@ import ge.fitness.core.presentation.design_system.theme.MomentumShapes
 import kotlinx.coroutines.launch
 
 
-@Composable
-fun ActiveLifestyleBanner() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
-            .clip(MomentumShapes.medium)
-            .padding(vertical = 24.dp),
-    ) {
-        MomentumCard(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    imageVector = RunningManIcon,
-                    contentDescription = "Runner Icon",
-                    modifier = Modifier.size(48.dp)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = stringResource(R.string.start_your_journey_towards_a_more_active_lifestyle),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun IntroPager(

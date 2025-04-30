@@ -30,11 +30,15 @@
             <option value="$PROJECT_DIR$/build-logic/convention" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core/data" />
-            <option value="$PROJECT_DIR$/core/datastore" />
+            <option value="$PROJECT_DIR$/core/database" />
             <option value="$PROJECT_DIR$/core/domain" />
             <option value="$PROJECT_DIR$/core/presentation" />
             <option value="$PROJECT_DIR$/core/presentation/design-system" />
             <option value="$PROJECT_DIR$/core/presentation/ui" />
+            <option value="$PROJECT_DIR$/workout" />
+            <option value="$PROJECT_DIR$/workout/data" />
+            <option value="$PROJECT_DIR$/workout/domain" />
+            <option value="$PROJECT_DIR$/workout/presentation" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

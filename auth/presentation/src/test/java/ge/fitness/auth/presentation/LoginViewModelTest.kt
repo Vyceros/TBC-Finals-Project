@@ -9,6 +9,7 @@ import ge.fitness.auth.presentation.login.LoginEvent
 import ge.fitness.auth.presentation.login.LoginViewModel
 import ge.fitness.core.domain.auth.AuthError
 import ge.fitness.core.domain.auth.User
+import ge.fitness.core.domain.datastore.DataStoreHelper
 import ge.fitness.core.domain.util.Resource
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -35,6 +36,7 @@ class LoginViewModelTest {
     private lateinit var validateEmailUseCase: ValidateEmailUseCase
     private lateinit var validatePasswordUseCase: ValidatePasswordUseCase
     private lateinit var loginUseCase: LoginUseCase
+    private lateinit var dataStoreHelper: DataStoreHelper
     private val testDispatcher = UnconfinedTestDispatcher()
     private val mockUser = User(
         id = "user123",
@@ -49,10 +51,12 @@ class LoginViewModelTest {
         validateEmailUseCase = mockk()
         validatePasswordUseCase = mockk()
         loginUseCase = mockk()
+        dataStoreHelper = mockk()
         viewModel = LoginViewModel(
             validateEmailUseCase,
             validatePasswordUseCase,
-            loginUseCase
+            loginUseCase,
+            dataStoreHelper
         )
     }
 
