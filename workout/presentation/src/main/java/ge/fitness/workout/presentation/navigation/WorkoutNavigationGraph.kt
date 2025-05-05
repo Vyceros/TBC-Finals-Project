@@ -28,9 +28,7 @@ fun NavGraphBuilder.workoutGraph(
     snakcbarHostState: SnackbarHostState
 ) {
     composable(route = WorkoutRoutes.Home::class.qualifiedName ?: "home") {
-        HomeScreenRoot{
-
-        }
+        HomeScreenRoot()
     }
 
     composable(route = WorkoutRoutes.Settings::class.qualifiedName ?: "settings") {

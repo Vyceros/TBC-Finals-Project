@@ -54,6 +54,7 @@ fun MomentumNavHost(
 
     val isLoggedIn by dataStoreHelper.getPreference(DataStoreKeys.IsLoggedIn)
         .collectAsStateWithLifecycle(initialValue = false)
+
     val rememberMe by dataStoreHelper.getPreference(DataStoreKeys.RememberMe)
         .collectAsStateWithLifecycle(initialValue = false)
 
@@ -97,27 +98,29 @@ fun MomentumNavHost(
         }
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {
-            NavHost(
-                navController = navController,
-                startDestination = if (isLoggedIn && rememberMe) {
-                    WorkoutRoutes.Home::class.qualifiedName ?: "home"
-                } else AuthRoutes.Intro::class.qualifiedName ?: "intro"
-            ) {
-                authGraph(
-                    onNavigateLogin = navController::navigateToLogin,
-                    onNavigateRegister = navController::navigateToSignUp,
-                    onNavigateHome = navController::navigateToHome,
-                    onBackClick = {
-                        navController.popBackStack()
-                    },
-                    snakcbarHostState = snackbarHostState
-                )
-                workoutGraph(
-                    onLogout = {
-                        navController.navigateToLogin()
-                    },
-                    snakcbarHostState = snackbarHostState
-                )
+            (if (isLoggedIn && rememberMe) {
+                WorkoutRoutes.Home::class.qualifiedName
+            } else AuthRoutes.Intro::class.qualifiedName)?.let {
+                NavHost(
+                    navController = navController,
+                    startDestination = it
+                ) {
+                    authGraph(
+                        onNavigateLogin = navController::navigateToLogin,
+                        onNavigateRegister = navController::navigateToSignUp,
+                        onNavigateHome = navController::navigateToHome,
+                        onBackClick = {
+                            navController.popBackStack()
+                        },
+                        snakcbarHostState = snackbarHostState
+                    )
+                    workoutGraph(
+                        onLogout = {
+                            navController.navigateToLogin()
+                        },
+                        snakcbarHostState = snackbarHostState
+                    )
+                }
             }
         }
     }

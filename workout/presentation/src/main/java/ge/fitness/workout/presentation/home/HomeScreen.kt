@@ -49,18 +49,14 @@ import ge.fitness.workout.presentation.model.ExerciseUiModel
 fun HomeScreenRoot(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val state = viewModel.state
 
     HomeScreen(
-
         state = viewModel.state,
-        onAction = {}
     )
 }
 
 @Composable
 fun HomeScreen(
-    onAction: (HomeAction) -> Unit,
     state: HomeState
 ) {
     val scrollState = rememberScrollState()
@@ -85,9 +81,12 @@ fun HomeScreen(
                 ExerciseRecommendationCard(
                     exercise = exercise,
                     onLongClick = {
-                    }
+                    },
+                    isLoading = state.isLoading
                 )
+
             }
+
         }
 
         SectionTitle(
@@ -207,7 +206,7 @@ fun WeeklyChallengeCard(
             ) {
                 Column {
                     Text(
-                        text = "We\nRecommend",
+                        text = stringResource(R.string.we_recommend),
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.secondary,

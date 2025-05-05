@@ -43,18 +43,18 @@ class HomeViewModel @Inject constructor(
             exerciseRepository.getAllExercises().collect { res ->
                 when (res) {
                     is Resource.Error -> {
-
+                        state = state.copy(isLoading = false)
                     }
 
                     Resource.Loading -> {
-
+                        state = state.copy(isLoading = true)
                     }
 
                     is Resource.Success -> {
                         state = state.copy(
                             exercises = res.data.map { it.toUiModel() },
-                            topWorkout = res.data.map { it.toUiModel() }.first()
-                        )
+                            topWorkout = res.data.map { it.toUiModel() }.first(),
+                            isLoading = false)
                     }
                 }
 
